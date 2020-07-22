@@ -3,7 +3,6 @@ clr;
 mdl = Model([0,1,1,0,0,0],'NModal',4,'NDisc',2);
 
 mdl = mdl.set('Jacobian',true,'Movie',false,'MovieAxis',[-0.75 0.75 -0.75 0.75 -1.75 .25]*0.85);
-% gravity put to -9.81
 
 
 %% generate dynamic model
