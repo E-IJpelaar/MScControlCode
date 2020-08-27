@@ -36,5 +36,5 @@ GRAVITY  = -9.81
 RADIUS   = 0.01
 
 [control]
-KP = 20000
+KP = 200
 KD = 20

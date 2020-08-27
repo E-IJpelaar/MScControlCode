@@ -22,26 +22,26 @@
 #define PRECISION 5
 #define PI 3.1415926
 
-typedef Eigen::Array<int, Dynamic, 1> Vxi;
-typedef Eigen::Array<int, 6, 1> V6i;
-typedef Eigen::Matrix<float, 6, 6> M6f;
-typedef Eigen::Matrix<float, 4, 4> M4f;
-typedef Eigen::Matrix<float, 3, 3> M3f;
-typedef Eigen::Matrix<float, 7, 1> V7f;
-typedef Eigen::Matrix<float, 13, 1> V13f;
-typedef Eigen::Matrix<float, 6, 1> V6f;
-typedef Eigen::Matrix<float, 4, 1> V4f;
-typedef Eigen::Matrix<float, 3, 1> V3f;
-typedef Eigen::VectorXf Vxf;
-typedef Eigen::MatrixXf Mxf;
-typedef Eigen::VectorXd Vxd;
-typedef Eigen::MatrixXd Mxd;
+typedef Eigen::Array<int, Dynamic, 1> Vxi;       // ? what does dynamic mean here? possibly changing length changes  ?x1 vector with integers
+typedef Eigen::Array<int, 6, 1> V6i;             // V6i = 6x1 vector with integers
+typedef Eigen::Matrix<float, 6, 6> M6f;          // M6f = 6x6 matrix with floats
+typedef Eigen::Matrix<float, 4, 4> M4f;          // M4f = 4x4 matrix with floats
+typedef Eigen::Matrix<float, 3, 3> M3f;          // M3f = 3x3 matrix with floats
+typedef Eigen::Matrix<float, 7, 1> V7f;          // V7f = 7x1 vector with floats
+typedef Eigen::Matrix<float, 13, 1> V13f;        // V13f = 13x1 vector with floats
+typedef Eigen::Matrix<float, 6, 1> V6f;          // V6f = 6x1 vector with floats         
+typedef Eigen::Matrix<float, 4, 1> V4f;          // V4f = 4x1 vector with floats       
+typedef Eigen::Matrix<float, 3, 1> V3f;          // V3f = 3x1 vector with floats       
+typedef Eigen::VectorXf Vxf;                     // Vxf = nx1 vector with floats
+typedef Eigen::MatrixXf Mxf;                     // Mxf = nxm matrix with floats
+typedef Eigen::VectorXd Vxd;                     // ? ?
+typedef Eigen::MatrixXd Mxd;                     // ? ?
 
-typedef Eigen::Matrix<float, 19, 1> Vff;
+typedef Eigen::Matrix<float, 19, 1> Vff;         // Vff = 19x1 vector with floats
 
 class Model
 {
-  public:
+  public:                                        // public variables
 
   	bool ENERGY_CONTROLLER;
   	bool WRITE_OUTPUT;
@@ -80,7 +80,7 @@ class Model
 
   	Mxf Hess;
 
-  	Mxf Ba,Bc;
+  	Mxf Ba,Bc;                                         //  here the different variables get there matrix/vector size defined
   	Mxf Sa,Sc;
   	M6f Mtt, Ktt, Dtt;
   	Mxf Mtee, Mee, Cee, Kee, Dee;
@@ -106,8 +106,7 @@ class Model
 	void read(const char* str, Vxf &x);
 	void cleanup();
 
-	void controllerPassive(float t, Mxf &M, Mxf &C,
-	Vxf &G, Vxf &f);
+	void controllerPassive(float t, Mxf &M, Mxf &C,	Vxf &G, Vxf &f);
 
 	Vxf implicit_simulate();
 

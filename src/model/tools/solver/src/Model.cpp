@@ -12,46 +12,51 @@ ofstream glog;
 //---------------------------------------------------
 Model::Model(const char* str){
 
-	V6i tab;
+	V6i tab;																		// type V6i  = array, tab = table with 6 integers (Model.h)
 
-	ConfigFile cf(str);
+	ConfigFile cf(str);                                                             // ?reads in configfile? 
 
-	ENERGY_CONTROLLER = static_cast<bool>(cf.Value("options","ENERGY_CONTROLLER"));
-	WRITE_OUTPUT = static_cast<bool>(cf.Value("options","WRITE_OUTPUT"));
+	// static_cast<bool> converts energy_controller to a boolean type
+	
+	ENERGY_CONTROLLER = static_cast<bool>(cf.Value("options","ENERGY_CONTROLLER"));  // check if energy controller is turned on in config file
+	WRITE_OUTPUT = static_cast<bool>(cf.Value("options","WRITE_OUTPUT"));            // check if output is desired in config file
 
-	K1 = static_cast<int>(cf.Value("cosserat","K1"));	// e_xy
-	K2 = static_cast<int>(cf.Value("cosserat","K2"));	// e_xz
-	K3 = static_cast<int>(cf.Value("cosserat","K3"));	// e_yz
-	E1 = static_cast<int>(cf.Value("cosserat","E1"));	// e_xx
-	E2 = static_cast<int>(cf.Value("cosserat","E2"));	// e_yy
-	E3 = static_cast<int>(cf.Value("cosserat","E3"));	// e_zz
 
-	tab << K1,K2,K3,E1,E2,E3;
+	// static_cast<int> converst possible float to an integer type
+ 
+	K1 = static_cast<int>(cf.Value("cosserat","K1"));	// e_xy   					// curvature-torsion strain
+	K2 = static_cast<int>(cf.Value("cosserat","K2"));	// e_xz						// curvature-torsion strain
+	K3 = static_cast<int>(cf.Value("cosserat","K3"));	// e_yz						// curvature-torsion strain
+	E1 = static_cast<int>(cf.Value("cosserat","E1"));	// e_xx						// stretch-shear strain
+	E2 = static_cast<int>(cf.Value("cosserat","E2"));	// e_yy						// stretch-shear strain
+	E3 = static_cast<int>(cf.Value("cosserat","E3"));	// e_zz						// stretch-shear strain
 
-	NDISC   = static_cast<int>(cf.Value("model","NDISC"));
-	NMODE   = static_cast<int>(cf.Value("model","NMODE"));
-  	SDOMAIN = cf.Value("model","SDOMAIN");
-  	TDOMAIN = cf.Value("model","TDOMAIN");
+	tab << K1,K2,K3,E1,E2,E3;                                                       // put K1 to E3 in "tab"
 
-  	SPACESTEP = static_cast<int>(cf.Value("solver","SPACESTEP"));
-  	INTSTEP   = static_cast<int>(cf.Value("solver","INTSTEP"));
-  	MAX_IMPL  = static_cast<int>(cf.Value("solver","MAX_IMPL"));
-  	MAX_ITER  = static_cast<int>(cf.Value("solver","MAX_ITER"));
-  	ATOL      = cf.Value("solver","ATOL");
-  	RTOL      = cf.Value("solver","RTOL");
-  	SPEEDUP   = cf.Value("solver","SPEEDUP");
-  	TIMESTEP  = cf.Value("solver","TIMESTEP");
+	NDISC   = static_cast<int>(cf.Value("model","NDISC"));                          // assign NDISC from config.txt under section "model"
+	NMODE   = static_cast<int>(cf.Value("model","NMODE"));							// assign NMMODE from config.txt under section "model"
+  	SDOMAIN = cf.Value("model","SDOMAIN");                                          // ? length of robot = 1? 
+  	TDOMAIN = cf.Value("model","TDOMAIN");                                          // time domain from config file
 
-  	RHO      = cf.Value("physics","RHO");
-  	EMOD     = cf.Value("physics","EMOD");
-  	NU       = cf.Value("physics","NU");
-  	MU       = cf.Value("physics","MU");
-  	PRS_AREA = cf.Value("physics","PRS_AREA");
-  	GRAVITY  = cf.Value("physics","GRAVITY");
-  	RADIUS   = cf.Value("physics","RADIUS");
+  	SPACESTEP = static_cast<int>(cf.Value("solver","SPACESTEP"));                   // discretize the length of the robot
+  	INTSTEP   = static_cast<int>(cf.Value("solver","INTSTEP"));                     // ? some step size ?
+  	MAX_IMPL  = static_cast<int>(cf.Value("solver","MAX_IMPL"));                    // ? ?
+  	MAX_ITER  = static_cast<int>(cf.Value("solver","MAX_ITER"));                    // ? maximum amount of solver iterations? 
+  	ATOL      = cf.Value("solver","ATOL");                                          // absolute tolerance
+  	RTOL      = cf.Value("solver","RTOL");											// relative tolerance
+  	SPEEDUP   = cf.Value("solver","SPEEDUP");                                       // ? ?
+  	TIMESTEP  = cf.Value("solver","TIMESTEP");                                      // discretize time
 
-  	KP = cf.Value("control","KP");
-  	KD = cf.Value("control","KD");
+  	RHO      = cf.Value("physics","RHO");                                           // mass density
+  	EMOD     = cf.Value("physics","EMOD");                                          // E modulus material
+  	NU       = cf.Value("physics","NU");											// ? ?
+  	MU       = cf.Value("physics","MU"); 											// ? ?
+  	PRS_AREA = cf.Value("physics","PRS_AREA");										// ? pressure area ? 
+  	GRAVITY  = cf.Value("physics","GRAVITY");                                       // gravitional acceleration
+  	RADIUS   = cf.Value("physics","RADIUS");                                        // ? radius of robot ? 
+
+  	KP = cf.Value("control","KP");                                                  // controller proportional gain
+  	KD = cf.Value("control","KD");                                                  // controller derivative gain
 
 	Ba = tableConstraints(tab,true);
 	Bc = tableConstraints(tab,false);
@@ -85,7 +90,8 @@ Model::Model(const char* str){
 	z0  = Vxf::Zero(6);
 
 	Xi0 << 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
-	gvec << 0.0, 0.0, 0.0, GRAVITY, 0.0, 0.0;
+	gvec << 0.0, 0.0, 0.0, GRAVITY, 0.0, 0.0;    // why is gravity 4th entry?
+
 
 	// read input
 	read("state.log",q);
