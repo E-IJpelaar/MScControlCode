@@ -1,4 +1,8 @@
+
+#define DISCONTINIOUS
 #include "src/Model.cpp"
+
+
 
 int main(int argc, char** argv)
 {
@@ -10,6 +14,7 @@ int main(int argc, char** argv)
 	cout << "q  = [" << mdl.q.transpose() << "]\n" << endl;
 	cout << "qd = [" << mdl.qd.transpose() << "]\n" << endl;
 	cout << "Sa = [" << mdl.Sa << "]\n" << endl;
+	cout << "NState = [" << mdl.NState << "]\n" << endl;
 
 	// // solve system
 	mdl.implicit_simulate();

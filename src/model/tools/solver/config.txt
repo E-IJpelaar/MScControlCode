@@ -3,7 +3,7 @@ ENERGY_CONTROLLER = 1
 WRITE_OUTPUT      = 1
 
 [cosserat]
-E1 = 0
+E1 = 0          
 E2 = 0
 E3 = 0
 K1 = 0

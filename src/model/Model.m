@@ -384,26 +384,69 @@ Model.dq0 = zeros(Model.NDof*Model.NModal,1);
 end
 
 %---------------------------------------------------------------------- set
-function P = ShapeFunction(Model,X)
+function P = ShapeFunction(Model,X)                 % discontinous shape functions C
+                                                    % add continous shape
+                                                    % functions
+
+                                                        
 
 Pc = cell(Model.NDof,1);
-X = double(X);
+X = single(X);
 
-P11 = zeros(1,Model.NDisc);
-P22 = zeros(1,Model.NDisc);
 
-for ii = 1:Model.NDisc
-    P11(1,ii) = sign(z1(X)).*chebyshev(z1(X),ii-1);
-    P22(1,ii) = sign(z2(X)).*chebyshev(z2(X),ii-1);
+if Model.NDisc>1
+    P11 = zeros(1,Model.NModal/Model.NDisc);
+    P22 = zeros(1,Model.NModal/Model.NDisc);
+else
+    P11 = zeros(1,Model.NModal);
 end
 
-P = horzcat(P11,P22);
+
+
+if Model.NDisc>1
+    for ii = 1:(Model.NModal/Model.NDisc)
+         P11(1,ii) = sign(z1(X)).*legendre(z1(X),ii-1);
+         P22(1,ii) = sign(z2(X)).*legendre(z2(X),ii-1);
+         %P11(1,ii) = w1(X)*chebyshev(z1(X),ii-1);
+         %P22(1,ii) = w2(X)*chebyshev(z2(X),ii-1);
+
+
+    end
+    P = horzcat(P11,P22);
+else
+    for ii = 1:Model.NModal
+        P11(1,ii) = legendre(X,ii-1);
+    end
+    P = P11;
+end
+
 
 for ii = 1:Model.NDof 
     Pc{ii,1} = P; 
 end
 
-P = blkdiag(Pc{:})+ 1e-16*X;
+
+P = blkdiag(Pc{:})+ 1e-26*X;                                         
+                                                    
+                                                                                                                                   
+% Pc = cell(Model.NDof,1);
+% X = double(X);
+% 
+% P11 = zeros(1,Model.NDisc);
+% P22 = zeros(1,Model.NDisc);
+% 
+% for ii = 1:Model.NDisc
+%     P11(1,ii) = sign(z1(X)).*chebyshev(z1(X),ii-1);
+%     P22(1,ii) = sign(z2(X)).*chebyshev(z2(X),ii-1);
+% end
+% 
+% P = horzcat(P11,P22);
+% 
+% for ii = 1:Model.NDof 
+%     Pc{ii,1} = P; 
+% end
+% 
+% P = blkdiag(Pc{:})+ 1e-16*X;
 
 
 function y = z1(x)

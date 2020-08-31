@@ -8,7 +8,16 @@
 #include <algorithm>
 #include <unistd.h>
 #include "liegroup.h"
+// #include "shapesx.cpp"
+
+
+#ifdef DISCONTINIOUS
 #include "shapesx.cpp"
+#else
+#include "shapes.cpp"
+#endif
+
+
 #include "bin/tictoc.h"
 #include "bin/smoothstep.h"
 #include "Config/ConfigFile.cpp"
@@ -22,7 +31,7 @@
 #define PRECISION 5
 #define PI 3.1415926
 
-typedef Eigen::Array<int, Dynamic, 1> Vxi;       // ? what does dynamic mean here? possibly changing length changes  ?x1 vector with integers
+typedef Eigen::Array<int, Dynamic, 1> Vxi;       // ? what does dynamic mean here? possibly changing length changes  nx1 vector with integers
 typedef Eigen::Array<int, 6, 1> V6i;             // V6i = 6x1 vector with integers
 typedef Eigen::Matrix<float, 6, 6> M6f;          // M6f = 6x6 matrix with floats
 typedef Eigen::Matrix<float, 4, 4> M4f;          // M4f = 4x4 matrix with floats
@@ -35,7 +44,7 @@ typedef Eigen::Matrix<float, 3, 1> V3f;          // V3f = 3x1 vector with floats
 typedef Eigen::VectorXf Vxf;                     // Vxf = nx1 vector with floats
 typedef Eigen::MatrixXf Mxf;                     // Mxf = nxm matrix with floats
 typedef Eigen::VectorXd Vxd;                     // ? ?
-typedef Eigen::MatrixXd Mxd;                     // ? ?
+typedef Eigen::MatrixXd Mxd;                     // d = doubles
 
 typedef Eigen::Matrix<float, 19, 1> Vff;         // Vff = 19x1 vector with floats
 
@@ -76,7 +85,8 @@ class Model
 
   	float KP, KD;
   	int NDof, NState;
-  	Shapes Phi;
+  	Shapes Phi;                                        // class "Shapes" is made in "shapes.h"
+	  
 
   	Mxf Hess;
 

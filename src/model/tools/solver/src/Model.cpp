@@ -24,7 +24,7 @@ Model::Model(const char* str){
 
 	// static_cast<int> converst possible float to an integer type
  
-	K1 = static_cast<int>(cf.Value("cosserat","K1"));	// e_xy   					// curvature-torsion strain
+	K1 = static_cast<int>(cf.Value("cosserat","K1"));	// e_xy   					// curvature-torsion strain   // booleans
 	K2 = static_cast<int>(cf.Value("cosserat","K2"));	// e_xz						// curvature-torsion strain
 	K3 = static_cast<int>(cf.Value("cosserat","K3"));	// e_yz						// curvature-torsion strain
 	E1 = static_cast<int>(cf.Value("cosserat","E1"));	// e_xx						// stretch-shear strain
@@ -35,74 +35,109 @@ Model::Model(const char* str){
 
 	NDISC   = static_cast<int>(cf.Value("model","NDISC"));                          // assign NDISC from config.txt under section "model"
 	NMODE   = static_cast<int>(cf.Value("model","NMODE"));							// assign NMMODE from config.txt under section "model"
-  	SDOMAIN = cf.Value("model","SDOMAIN");                                          // ? length of robot = 1? 
+  	SDOMAIN = cf.Value("model","SDOMAIN");                                          // length of robot
   	TDOMAIN = cf.Value("model","TDOMAIN");                                          // time domain from config file
 
   	SPACESTEP = static_cast<int>(cf.Value("solver","SPACESTEP"));                   // discretize the length of the robot
-  	INTSTEP   = static_cast<int>(cf.Value("solver","INTSTEP"));                     // ? some step size ?
-  	MAX_IMPL  = static_cast<int>(cf.Value("solver","MAX_IMPL"));                    // ? ?
-  	MAX_ITER  = static_cast<int>(cf.Value("solver","MAX_ITER"));                    // ? maximum amount of solver iterations? 
+  	INTSTEP   = static_cast<int>(cf.Value("solver","INTSTEP"));                     // integral stepsize for mass/stifness matrix
+  	MAX_IMPL  = static_cast<int>(cf.Value("solver","MAX_IMPL"));                    // maximum amount of implicit time steps
+  	MAX_ITER  = static_cast<int>(cf.Value("solver","MAX_ITER"));                    // maximum amount of solver iteration 
   	ATOL      = cf.Value("solver","ATOL");                                          // absolute tolerance
   	RTOL      = cf.Value("solver","RTOL");											// relative tolerance
-  	SPEEDUP   = cf.Value("solver","SPEEDUP");                                       // ? ?
+  	SPEEDUP   = cf.Value("solver","SPEEDUP");                                       // used in static solver
   	TIMESTEP  = cf.Value("solver","TIMESTEP");                                      // discretize time
 
   	RHO      = cf.Value("physics","RHO");                                           // mass density
   	EMOD     = cf.Value("physics","EMOD");                                          // E modulus material
-  	NU       = cf.Value("physics","NU");											// ? ?
-  	MU       = cf.Value("physics","MU"); 											// ? ?
-  	PRS_AREA = cf.Value("physics","PRS_AREA");										// ? pressure area ? 
+  	NU       = cf.Value("physics","NU");											// poison ratio
+  	MU       = cf.Value("physics","MU"); 											// damping coefficeint
+  	PRS_AREA = cf.Value("physics","PRS_AREA");										// effective pressure area 
   	GRAVITY  = cf.Value("physics","GRAVITY");                                       // gravitional acceleration
-  	RADIUS   = cf.Value("physics","RADIUS");                                        // ? radius of robot ? 
+  	RADIUS   = cf.Value("physics","RADIUS");                                        // radius of robot 
 
   	KP = cf.Value("control","KP");                                                  // controller proportional gain
   	KD = cf.Value("control","KD");                                                  // controller derivative gain
 
-	Ba = tableConstraints(tab,true);
-	Bc = tableConstraints(tab,false);
-	NDof = Ba.cols();
-	NState = NDof * NMODE;
+	Ba = tableConstraints(tab,true);												// CHECK HOW FUNCTION WORKS ? active DOF ?
+	Bc = tableConstraints(tab,false);										        // contraint DOF
+	NDof = Ba.cols();																// amount of active DOF. equal to collums of Ba
+	NState = NDof * NMODE;															// ? amount of states ?
 
-	Vxi sa(NDISC), stab(NState);
-	sa.setZero();
-	sa(0) = 1;
-	stab = sa.replicate(NMODE,1);
+	//Vxi sa(NDISC), stab(NState);       //                                             // create 2 vectors sa and stab, with length NDISC and NState, respectively
+	//sa.setZero();                                                                   // initialize vector sa with zeros                                     
+	//sa(0) = 1;                                                                      // sa first index = 0
+	//stab = sa.replicate(NMODE,1);                                                   //  replciate = copy 
+	//Sa = tableConstraints(stab,true);                                               // ? what is "stab" what does set == true/false physically mean?                             
+	//Sc = tableConstraints(stab,false);                                              // ? create some sort of actuated and contrained input matrix S?
 
-	Sa = tableConstraints(stab,true);
-	Sc = tableConstraints(stab,false);
+	// Sa.transposeInPlace();                                                           // transpose matrices
+	// Sc.transposeInPlace();
 
-	Sa.transposeInPlace();
-	Sc.transposeInPlace();
+// code brandon
+	
+	Vxi sa(NMODE/NDISC), sc(NMODE), stab(NState);
+    stab.setZero();
+    stab(0) = 1;
 
-	Phi.set(NMODE,NDof,NDISC,"chebyshev");
+ 
 
-	buildInertiaTensor();
+    #ifdef DISCONTINIOUS
+        sa.setZero();
+        sa(0) = 1;
+        sc = sa.replicate(NDISC,1);
+        Phi.set(NMODE,NDof,NDISC,"legendre");
+        cout << "DISCONTINIOUS = true" << endl;
+    #else
+        sc.setZero();
+        sc(0) = 1.0;
+        Phi.set(NMODE,NDof,"legendre");
+        cout << "CONTINIOUS = true" << endl;
+    #endif
+
+ 
+
+    stab = sc.replicate(NDof,1);
+    Sa = tableConstraints(stab,true);
+    Sc = tableConstraints(stab,false);
+
+ 
+
+    Sa.transposeInPlace();
+    Sc.transposeInPlace();
+	
+
+	// build Inertia Tensor, Stiffness Tensor, Damping Tensor and Global system as called in functions
+	// check how each function works
+	
+	buildInertiaTensor();													         
 	buildStiffnessTensor();
 	buildDampingTensor();
 	buildGlobalSystem();
 
-	q   = Vxf::Constant(NState,ATOL);
-	dq  = Vxf::Zero(NState);
+
+
+	q   = Vxf::Constant(NState,ATOL);    // ? create constant vector ? Why these values especially ATOL ?
+	dq  = Vxf::Zero(NState);             // create zero vectors
 	ddq = Vxf::Zero(NState);
-	qd  = Vxf::Zero(NState);
-	tau = Vxf::Zero(NDof*NDISC);
+	qd  = Vxf::Zero(NState);			// ? Vxf is undifined length matrix??
+	tau = Vxf::Zero(NDof*NDISC);        // control input vector
 	u   = Vxf::Zero(6);
 	z0  = Vxf::Zero(6);
 
 	Xi0 << 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
-	gvec << 0.0, 0.0, 0.0, GRAVITY, 0.0, 0.0;    // why is gravity 4th entry?
+	gvec << 0.0, 0.0, 0.0, GRAVITY, 0.0, 0.0;    //  ? why is gravity 4th entry? rot1 rot2 rot3 x y z ?
 
 
 	// read input
-	read("state.log",q);
-	//read("state_dt.log",dq);
-	//read("input.log",tau);
-	read("point.log",qd);
+	read("state.log",q);               // read state.log = initial position
+	//read("state_dt.log",dq);         // ? read state_dt.log = initial velocities ? 
+	//read("input.log",tau);           // read control input tau
+	read("point.log",qd);              // read point.log = desired position
 
 	// clean up 
-	cleanup();
+	cleanup();                          // cleans output files
 
-	statelog.open("state.log", ios_base::app | ios::binary);
+	statelog.open("state.log", ios_base::app | ios::binary);    // 
 	taulog.open("tau.log", ios_base::app | ios::binary);
 	glog.open("g.log", ios_base::app | ios::binary);
 
@@ -510,7 +545,7 @@ Mxf Model::tableConstraints(Vxi table, bool set){
 	N = table.rows();
 
 	Mxf Id;
-	Id = Mxf::Identity(N,N);
+	Id = Mxf::Identity(N,N);                                       // create a NxN identity matrix of type Mxf (matrix nxn of floats)
 
 	if(set == true){na = (table>0).count();}
 	else{na = (table==0).count();}
