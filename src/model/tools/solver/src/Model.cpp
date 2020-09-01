@@ -63,18 +63,7 @@ Model::Model(const char* str){
 	NDof = Ba.cols();																// amount of active DOF. equal to collums of Ba
 	NState = NDof * NMODE;															// ? amount of states ?
 
-	//Vxi sa(NDISC), stab(NState);       //                                             // create 2 vectors sa and stab, with length NDISC and NState, respectively
-	//sa.setZero();                                                                   // initialize vector sa with zeros                                     
-	//sa(0) = 1;                                                                      // sa first index = 0
-	//stab = sa.replicate(NMODE,1);                                                   //  replciate = copy 
-	//Sa = tableConstraints(stab,true);                                               // ? what is "stab" what does set == true/false physically mean?                             
-	//Sc = tableConstraints(stab,false);                                              // ? create some sort of actuated and contrained input matrix S?
 
-	// Sa.transposeInPlace();                                                           // transpose matrices
-	// Sc.transposeInPlace();
-
-// code brandon
-	
 	Vxi sa(NMODE/NDISC), sc(NMODE), stab(NState);
     stab.setZero();
     stab(0) = 1;

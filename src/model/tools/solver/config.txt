@@ -11,8 +11,8 @@ K2 = 1
 K3 = 1
 
 [model]
-NMODE   = 4
-NDISC   = 2
+NMODE   = 2
+NDISC   = 1
 SDOMAIN = 1
 TDOMAIN = 10
 

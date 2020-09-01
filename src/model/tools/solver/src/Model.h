@@ -31,7 +31,7 @@
 #define PRECISION 5
 #define PI 3.1415926
 
-typedef Eigen::Array<int, Dynamic, 1> Vxi;       // ? what does dynamic mean here? possibly changing length changes  nx1 vector with integers
+typedef Eigen::Array<int, Dynamic, 1> Vxi;       // Dynamic vector with integers
 typedef Eigen::Array<int, 6, 1> V6i;             // V6i = 6x1 vector with integers
 typedef Eigen::Matrix<float, 6, 6> M6f;          // M6f = 6x6 matrix with floats
 typedef Eigen::Matrix<float, 4, 4> M4f;          // M4f = 4x4 matrix with floats
@@ -43,8 +43,8 @@ typedef Eigen::Matrix<float, 4, 1> V4f;          // V4f = 4x1 vector with floats
 typedef Eigen::Matrix<float, 3, 1> V3f;          // V3f = 3x1 vector with floats       
 typedef Eigen::VectorXf Vxf;                     // Vxf = nx1 vector with floats
 typedef Eigen::MatrixXf Mxf;                     // Mxf = nxm matrix with floats
-typedef Eigen::VectorXd Vxd;                     // ? ?
-typedef Eigen::MatrixXd Mxd;                     // d = doubles
+typedef Eigen::VectorXd Vxd;                     // Dynamic vector with doubles
+typedef Eigen::MatrixXd Mxd;                     // Dynamic matrix with doubles
 
 typedef Eigen::Matrix<float, 19, 1> Vff;         // Vff = 19x1 vector with floats
 
