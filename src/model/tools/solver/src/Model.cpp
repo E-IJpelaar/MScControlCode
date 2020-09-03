@@ -181,8 +181,9 @@ void Model::cleanup(){
 //---------------------------------------------------
 //-- passivity-based controller for end-effector
 //---------------------------------------------------
-void Model::controllerPassive(float t, Mxf &M, Mxf &C,
-Vxf &G, Vxf &f){
+void Model::controllerPassive(float t, Mxf &M, Mxf &C,Vxf &G, Vxf &f){
+
+    
 
 	int na, nc;
 	na = NDof*NDISC;
@@ -197,8 +198,16 @@ Vxf &G, Vxf &f){
 	Vxf H1(nc), H2(na);
 	Vxf H2_(na);
 
-	S.block(0,0,na,NState).noalias()  = Sc;
-	S.block(na,0,nc,NState).noalias() = Sa;
+
+
+	// hier gaat het fout in de aanmaak van 
+
+	//S.block(0,0,na,NState).noalias()  = Sc;       //block function, syntax == dynamic size  block(i,j,p,q) = starting at i,j block size p,q
+	//S.block(na,0,nc,NState).noalias() = Sa;
+
+	S.block(0,0,nc,NState).noalias()  = Sc;
+	S.block(nc,0,na,NState).noalias() = Sa;
+
 
 	// partition mass matrix;
 	Ms.noalias() = S*M*S.transpose();
@@ -206,6 +215,7 @@ Vxf &G, Vxf &f){
 	M12.noalias() = Ms.block(0,nc,nc,na);
 	M21.noalias() = Ms.block(nc,0,na,nc);
 	M22.noalias() = Ms.block(nc,nc,na,na);
+
 
 	// partition non-inertial forces
 	Hs.noalias() = S*(C*dq + G + 0*Kee*q);
@@ -234,6 +244,7 @@ Vxf Model::implicit_simulate(){
 
 	M6f tmp;
 
+
 	x.block(0,0,n,1) = q;
 	x.block(n,0,n,1) = dq;
 
@@ -244,12 +255,13 @@ Vxf Model::implicit_simulate(){
 	// solve implicit time integration
 	while (t < TDOMAIN && i < MAX_ITER){
 
-		dynamicODE(t,x,K1);
 
+		dynamicODE(t,x,K1);
 		R.noalias() = -dt*K1;
 		hessianInverse(dt,R,dr);
 		dx.noalias() = -dr;
 
+		
 		#ifndef QUASINETWON
 		while(abs(R.block(n,0,n,1).norm()) > RTOL && j < MAX_IMPL){
 			dynamicODE(t+dt,x+dx,K2);
@@ -259,6 +271,7 @@ Vxf Model::implicit_simulate(){
 			j++;
 		}
 		#endif
+	
 
   		if(isnan(dx.norm())){
   			i = MAX_ITER; 
@@ -272,57 +285,79 @@ Vxf Model::implicit_simulate(){
 			output(glog,t,g);
 		}
 
+
   		x.noalias() += dx;
   		t += dt;
   		i++;
   		j = 0.0;
 	}
 
+
 	#ifdef TICTOC
 		toc((float)TDOMAIN);
 	#endif
 
+
 	// return solutions q* = q(t_eq)
 	return x.block(0,0,n,1);
+
+ 
 }
+
 
 //---------------------------------------------------
 //-------------------------------------- dynamic ode
 //---------------------------------------------------
 void Model::dynamicODE(float t, Vxf x, Vxf &dx){
 	
+	
 	int n = NState;
 	Vxf x1(n), x2(n);
 	Vxf Q(n), Qa(n), Qv(n), Qu(n);
+
+	
 
 	Qa.setZero();
 	Qv.setZero();
 	Qu.setZero();
 
+	
 	// extract the generalized coordinates 
 	x1.noalias() = x.block(0,0,n,1);
 	x2.noalias() = x.block(n,0,n,1);	
-
+	
+	
 	// compute Lagrangian model
 	buildLagrange(x1,x2,Mee,Cee,Gee,Mtee);
 	Qv.noalias() += Cee*x2;
 	Qa.noalias() += Gee;
 
+	
 	// add elastic material forces
 	Qa.noalias() += Kee*x1;
 
 	// add viscous material forces
 	Qv.noalias() += Dee*x2;
 
-	if(ENERGY_CONTROLLER){
-		controllerPassive(t,Mee,Cee,Gee,tau);
 
+
+	if(ENERGY_CONTROLLER){
+
+		// mistake is in controllerPassive
+
+		controllerPassive(t,Mee,Cee,Gee,tau);
 		Qu.noalias() = Sa.transpose()*tau;
+
 	}
+
 
 	(dx.block(0,0,n,1)).noalias() = x2;
 	(dx.block(n,0,n,1)).noalias() = Mee.llt().solve(-Qa - Qv + Qu);
+
 }
+
+
+
 
 //---------------------------------------------------
 //---------------------------- build Jacobian matrix

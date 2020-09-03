@@ -3,7 +3,7 @@ ENERGY_CONTROLLER = 1
 WRITE_OUTPUT      = 1
 
 [cosserat]
-E1 = 0          
+E1 = 0         
 E2 = 0
 E3 = 0
 K1 = 0
@@ -14,7 +14,7 @@ K3 = 1
 NMODE   = 2
 NDISC   = 1
 SDOMAIN = 1
-TDOMAIN = 10
+TDOMAIN = 5
 
 [solver]
 SPACESTEP = 11
@@ -36,5 +36,5 @@ GRAVITY  = -9.81
 RADIUS   = 0.01
 
 [control]
-KP = 200
-KD = 20
+KP = 20000
+KD = 200

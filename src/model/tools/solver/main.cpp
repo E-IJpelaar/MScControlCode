@@ -15,12 +15,20 @@ int main(int argc, char** argv)
 	cout << "qd = [" << mdl.qd.transpose() << "]\n" << endl;
 	cout << "Sa = [" << mdl.Sa << "]\n" << endl;
 	cout << "NState = [" << mdl.NState << "]\n" << endl;
+	cout << "K1 = [" << mdl.K1 << "]\n" << endl;
+	cout << "K2 = [" << mdl.K2 << "]\n" << endl;
+	cout << "Sc = [" << mdl.Sc << "]\n" << endl;
+	cout << "Bc = [" << mdl.Bc << "]\n" << endl;
+	cout << "Ba = [" << mdl.Ba << "]\n" << endl;
+	cout << "Ndof = [" << mdl.NDof << "]\n" << endl;
+
 
 	// // solve system
 	mdl.implicit_simulate();
 		
 	return 0;
 }
+
 
 
 // REFERENCES

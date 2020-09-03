@@ -1,6 +1,6 @@
 clr;
 %% assign free DOF
-mdl = Model([0,1,1,0,0,0],'NModal',2,'NDisc',1); % Ndisc and config.txt = 1 for 1 link robot. [x y z rot 1 2 3]
+mdl = Model([0,1,1,0,0,0],'NModal',6,'NDisc',1); % Ndisc and config.txt = 1 for 1 link robot. [x y z rot 1 2 3]
 
 mdl = mdl.set('Jacobian',true,'Movie',false,'MovieAxis',[-0.75 0.75 -0.75 0.75 -1.75 .25]*0.85);
 
@@ -11,6 +11,7 @@ mdl = mdl.generate();
 %% assign controllers
 mdl.point = [1 1 1 1 1 1 1 1];%[0,0,0,0.4,0.,0.7];
 mdl.Pressure = @(t) 0*[0,0,0,0,0.5,0,0,0];
+
 
 %% simulate soft robot
 mdl = mdl.csolve(); 
@@ -44,7 +45,7 @@ plot(t,u,'-','linewidth',1.0);
 % mdl = mdl.set('t',t);
 % mdl = mdl.set('g',g);
 % % % 
-% mdl.showModel();
+mdl.showModel();
 
 
 
