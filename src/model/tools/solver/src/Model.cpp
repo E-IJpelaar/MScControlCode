@@ -14,7 +14,7 @@ Model::Model(const char* str){
 
 	V6i tab;																		// type V6i  = array, tab = table with 6 integers (Model.h)
 
-	ConfigFile cf(str);                                                             // ?reads in configfile? 
+	ConfigFile cf(str);                                                             // reads in configfile 
 
 	// static_cast<bool> converts energy_controller to a boolean type
 	
@@ -61,7 +61,7 @@ Model::Model(const char* str){
 	Ba = tableConstraints(tab,true);												// CHECK HOW FUNCTION WORKS ? active DOF ?
 	Bc = tableConstraints(tab,false);										        // contraint DOF
 	NDof = Ba.cols();																// amount of active DOF. equal to collums of Ba
-	NState = NDof * NMODE;															// ? amount of states ?
+	NState = NDof * NMODE;															// amount of states
 
 
 	Vxi sa(NMODE/NDISC), sc(NMODE), stab(NState);
@@ -105,7 +105,7 @@ Model::Model(const char* str){
 
 
 
-	q   = Vxf::Constant(NState,ATOL);    // ? create constant vector ? Why these values especially ATOL ?
+	q   = Vxf::Constant(NState,ATOL);    // Create a vector of near 0 values
 	dq  = Vxf::Zero(NState);             // create zero vectors
 	ddq = Vxf::Zero(NState);
 	qd  = Vxf::Zero(NState);			// ? Vxf is undifined length matrix??
@@ -183,7 +183,7 @@ void Model::cleanup(){
 //---------------------------------------------------
 void Model::controllerPassive(float t, Mxf &M, Mxf &C,Vxf &G, Vxf &f){
 
-    
+	// passive controller design
 
 	int na, nc;
 	na = NDof*NDISC;
@@ -198,12 +198,10 @@ void Model::controllerPassive(float t, Mxf &M, Mxf &C,Vxf &G, Vxf &f){
 	Vxf H1(nc), H2(na);
 	Vxf H2_(na);
 
-
-
-	// hier gaat het fout in de aanmaak van 
-
-	//S.block(0,0,na,NState).noalias()  = Sc;       //block function, syntax == dynamic size  block(i,j,p,q) = starting at i,j block size p,q
-	//S.block(na,0,nc,NState).noalias() = Sa;
+	
+	Vxf Gs(NState);						// for graivty part
+	Vxf g1(nc), g2(na);                        
+	Vxf g2_(na);
 
 	S.block(0,0,nc,NState).noalias()  = Sc;
 	S.block(nc,0,na,NState).noalias() = Sa;
@@ -216,16 +214,40 @@ void Model::controllerPassive(float t, Mxf &M, Mxf &C,Vxf &G, Vxf &f){
 	M21.noalias() = Ms.block(nc,0,na,nc);
 	M22.noalias() = Ms.block(nc,nc,na,na);
 
+	// Original sytem
+	//	// partition non-inertial forces
+	//	Hs.noalias() = S*(C*dq + G + 0*Kee*q);    
+	//	H1.noalias() = Hs.block(0,0,nc,1);
+	//	H2.noalias() = Hs.block(nc,0,na,1);
+
+	//M22_.noalias() = M22 - M21*M11.householderQr().solve(M12);
+	//H2_noalias() = H2 - M21*M11.householderQr().solve(H1);
+
+	//f.noalias() = M22_*(-KP*Sa*(q-qd) - KD*Sa*dq) + H2_;
+
+	// Adapted version (G split up)
 
 	// partition non-inertial forces
-	Hs.noalias() = S*(C*dq + G + 0*Kee*q);
+	Hs.noalias() = S*(C*dq + 0*Kee*q);        
 	H1.noalias() = Hs.block(0,0,nc,1);
 	H2.noalias() = Hs.block(nc,0,na,1);
 
-	M22_.noalias() = M22 - M21*M11.householderQr().solve(M12);
-	H2_.noalias() = H2 - M21*M11.householderQr().solve(H1);
+    
+	// partision gravity
+	Gs.noalias() = S*G;                     // check if G vector is correct
+	g1.noalias() = Gs.block(0,0,nc,1);
+	g2.noalias() = Gs.block(nc,0,na,1);
 
-	f.noalias() = M22_*(-KP*Sa*(q-qd) - KD*Sa*dq) + H2_; 
+
+	M22_.noalias() = M22 - M21*M11.householderQr().solve(M12);
+	H2_.noalias()  = H2 - M21*M11.householderQr().solve(H1);
+	g2_.noalias()  = g2 - M21*M11.householderQr().solve(g1);     // partial feedback for gravity vector
+
+
+	f.noalias() = M22_*(-KP*Sa*(q-qd) - KD*Sa*dq) + H2_ + g2_;  // with gravity compensation
+
+
+
 }
 
 //--------------------------------------------------
@@ -343,8 +365,6 @@ void Model::dynamicODE(float t, Vxf x, Vxf &dx){
 
 	if(ENERGY_CONTROLLER){
 
-		// mistake is in controllerPassive
-
 		controllerPassive(t,Mee,Cee,Gee,tau);
 		Qu.noalias() = Sa.transpose()*tau;
 
@@ -414,8 +434,7 @@ void Model::buildJacobian(float se, Mxf &J, Mxf &Jt){
 //---------------------------------------------------
 //--------------------------  build lagrangian model
 //---------------------------------------------------
-void Model::buildLagrange(Vxf v, Vxf dv, 
-	Mxf &M, Mxf &C, Vxf &G, Mxf &Mt){
+void Model::buildLagrange(Vxf v, Vxf dv,Mxf &M, Mxf &C, Vxf &G, Mxf &Mt){
 
 	int n = NState;
 	double ds,s;
@@ -464,7 +483,7 @@ void Model::buildLagrange(Vxf v, Vxf dv,
   		M.noalias()  += (ds/4.0)*(K1M+3.0*K2M);
   		C.noalias()  += (ds/4.0)*(K1C+3.0*K2C);
   		G.noalias()  += (ds/4.0)*(K1G+3.0*K2G);
-  		Mt.noalias()  += (ds/4.0)*(K1Mt+3.0*K2Mt);
+  		Mt.noalias() += (ds/4.0)*(K1Mt+3.0*K2Mt);
 	}
 }
 
@@ -507,9 +526,7 @@ void Model::jacobiODE(float s, V13f x, V13f &dx,
 //---------------------------------------------------
 //--------------- forward integrate Lagrangian model
 //---------------------------------------------------
-void Model::lagrangianODE(float s, V13f x, Mxf J, Mxf Jt,
-	V13f &dx, Mxf &dJ, Mxf &dJt, Mxf &dM, Mxf &dC, Vxf &dG,
-	Mxf &dMt){
+void Model::lagrangianODE(float s, V13f x, Mxf J, Mxf Jt, V13f &dx, Mxf &dJ, Mxf &dJt, Mxf &dM, Mxf &dC, Vxf &dG,	Mxf &dMt){
 
 	Mxf PMat(NDof, NState);
 	M6f Adg, Adg_;
@@ -562,7 +579,7 @@ void Model::lagrangianODE(float s, V13f x, Mxf J, Mxf Jt,
 //---------------------------------------------------
 //----------- convert table to active/constraint set
 //---------------------------------------------------
-Mxf Model::tableConstraints(Vxi table, bool set){
+Mxf Model::tableConstraints(Vxi table, bool set){             // creates the Sa and Sc matrices
 	int k = 0;
 	int na, N;
 
@@ -687,6 +704,9 @@ void Model::buildGlobalSystem(){
 	Mtee = Mxf::Zero(NState,NState);
 	Gee  = Vxf::Zero(NState);
 
+
+	// Gee should still be created
+
 	s = 0.0;
 	ds = (1.0*(SDOMAIN))/(1.0*(INTSTEP));
 
@@ -699,6 +719,8 @@ void Model::buildGlobalSystem(){
   		Kee.noalias() += (ds/4.0)*(K1K+3.0*K2K);
   		Mee.noalias() += (ds/4.0)*(K1M+3.0*K2M);
   		Dee.noalias() += (ds/4.0)*(K1D+3.0*K2D);
+	
+	
 	}
 
 	Mee = ((Mee.array().abs() > 1e-6*Mee.norm()).select(Mee.array(),0.0));
@@ -724,6 +746,7 @@ void Model::systemMatODE(float s,
 	K.noalias() = ((Ba*PMat).transpose())*Ktt*(Ba*PMat);
 	M.noalias() = ((Ba*PMat).transpose())*Mtt*(Ba*PMat);
 	D.noalias() = ((Ba*PMat).transpose())*Dtt*(Ba*PMat);
+
 }
 
 //---------------------------------------------------

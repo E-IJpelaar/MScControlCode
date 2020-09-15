@@ -8,6 +8,7 @@ int main(int argc, char** argv)
 {
 	//generate model-class
 
+
 	//Model mdl(argv[1]);
 	Model mdl("config.txt");
 
@@ -21,6 +22,10 @@ int main(int argc, char** argv)
 	cout << "Bc = [" << mdl.Bc << "]\n" << endl;
 	cout << "Ba = [" << mdl.Ba << "]\n" << endl;
 	cout << "Ndof = [" << mdl.NDof << "]\n" << endl;
+	cout << "G11 = [" << mdl.G11 << "]\n" << endl;
+	cout << "G22 = [" << mdl.G22 << "]\n" << endl;
+	cout << "G33 = [" << mdl.G33 << "]\n" << endl;
+	cout << "Gee = [" << mdl.Gee << "]\n" << endl;
 
 
 	// // solve system

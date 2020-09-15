@@ -11,7 +11,7 @@ K2 = 1
 K3 = 1
 
 [model]
-NMODE   = 2
+NMODE   = 1
 NDISC   = 1
 SDOMAIN = 1
 TDOMAIN = 5
@@ -36,5 +36,5 @@ GRAVITY  = -9.81
 RADIUS   = 0.01
 
 [control]
-KP = 20000
-KD = 200
+KP = 1000
+KD = 50

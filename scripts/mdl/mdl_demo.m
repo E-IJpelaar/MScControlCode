@@ -1,6 +1,6 @@
 clr;
 %% assign free DOF
-mdl = Model([0,1,1,0,0,0],'NModal',6,'NDisc',1); % Ndisc and config.txt = 1 for 1 link robot. [x y z rot 1 2 3]
+mdl = Model([0,1,1,0,0,0],'NModal',1,'NDisc',1); % Ndisc and config.txt = 1 for 1 link robot. [x y z rot 1 2 3]
 
 mdl = mdl.set('Jacobian',true,'Movie',false,'MovieAxis',[-0.75 0.75 -0.75 0.75 -1.75 .25]*0.85);
 
