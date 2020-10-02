@@ -8,13 +8,13 @@ DISCONTINIOUS        = 0
 [cosserat]
 E1 = 0
 E2 = 0
-E3 = 0
+E3 = 1
 K1 = 1
-K2 = 1
-K3 = 1
+K2 = 0
+K3 = 0
 
 [model]
-NMODE   = 3
+NMODE   = 2
 NDISC   = 1
 SDOMAIN = 1
 TDOMAIN = 25
@@ -37,7 +37,7 @@ EMOD     = 1e6
 NU       = 0.4
 MU       = 0.2
 PRS_AREA = 1e-5
-GRAVITY  = 0
+GRAVITY  = -9.81
 RADIUS   = 0.01
 AREA     = 3.0000e-04
 J_XX     = 2.7250e-10

@@ -16,11 +16,16 @@ int main(int argc, char** argv)
 	if(mdl.KINEMATIC_CONTROLLER){
 		mdl.inverse_kinematics();
 		cout << "qd=" << mdl.qd.transpose().format(matlab) << endl;
+		cout << "Ba" << mdl.Ba << endl;
+		cout << "Bc" << mdl.Bc << endl;
+		cout << "q" << mdl.q << endl;
+		cout << "=xi" << mdl.xi << endl;
 	}
 	else if(mdl.ENERGY_CONTROLLER){
 		mdl.implicit_simulate();
 	}
 	else{
+		
 		//mdl.tau = mdl.q;
 		//mdl.q.setZero();
 		mdl.implicit_simulate();
