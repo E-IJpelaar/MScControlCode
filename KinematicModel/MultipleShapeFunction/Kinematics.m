@@ -4,7 +4,7 @@ shape = "cheby";  % poly = polynomial, cheby = chebyshev, legendre = legendre
 Nmode = 2;           % # shape functions to approximate strain/curvature
 
 L = 1;               % undeformed length of actuator
-q = [0.1;0;0.1;0];    % q(t) = q(0)
+q = [0.5;0;0.1;0];    % q(t) = q(0)
 
 %% Contrained strain/curvature, 0 = contrained 1 = free
 K1 = 0;  % curvatures
@@ -40,7 +40,7 @@ end
 
 %% Forward kinematics
 
-g0 = [1;0;0;0;0;1;0;0;0;0;1;0;0;0;0;1];   % initial condition g0=eye(4,4)
+g0 = [1;0;0;0;0;1;0;0;0;0;1;0;0;1;1;1];   % initial condition g0=eye(4,4)
 [l, g] = ode45(@(l,y) forwardKinematics(l,y,q,Ba,shape,Nmode),[0 L],g0); % solve forward kinematics
 
 %% Present output in SE3
@@ -52,9 +52,9 @@ Rot{ii}     = [g(ii,1),g(ii,2),g(ii,3);     % robot's rotation
                g(ii,9),g(ii,10),g(ii,11)]; 
 end
 
-xdata = g(:,13);                       % robot's translation x
-ydata = g(:,14);                       % robot's translation y
-zdata = g(:,15);                       % robot's translation z 
+xdata = g(:,4);                       % robot's translation x
+ydata = g(:,8);                       % robot's translation y
+zdata = g(:,12);                       % robot's translation z 
 
 
 [actuator_length,~] = arclength(xdata,ydata,zdata,'s')
