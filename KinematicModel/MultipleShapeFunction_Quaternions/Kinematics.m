@@ -1,11 +1,10 @@
 clear all;close all;clc;tic
-warning("quaternions are used, and are scaled to 1, therefore rotation is not correctly")
 %% Parameters
 shape = "legendre";   % poly = polynomial, cheby = chebyshev, legendre = legendre
 Nmode = 2;            % # shape functions to approximate strain/curvature
 
 L = 1;                % undeformed length of actuator
-q = [1;0;0.1;0];    % q(t) = q(0)
+q = [0;0;0.1;0];    % q(t) = q(0)
 
 %% Contrained strain/curvature, 0 = contrained 1 = free
 K1 = 0;  % curvatures
@@ -39,12 +38,11 @@ if Nmode*n ~= length(q)                     % throw error when q is not of satis
 end
 
 %% Forward kinematics
-g0_rot = eye(3);             % inital rotation
-g0_rot = rotm2quat(g0_rot);  % rotation to quaternion
-g0_trans = zeros(3,1);       % initial translation
-g0 = [g0_rot';g0_trans];     % initial condition vector
+Q0 = rot2quat(eye(3));
+r0 = zeros(3,1);
+g0 = [Q0;r0];
 
-[l, g] = ode45(@(l,y) forwardKinematics(l,y,q,Ba,shape,Nmode),[0 L],g0); % solve forward kinematics
+[l, g] = ode45(@(l,g) forwardKinematics(l,g,q,Ba,shape,Nmode),[0 L],g0); % solve forward kinematics
 
 %% Interpret data
 R = g(:,1:4);       % robot's rotation expressed in quaternions
@@ -54,16 +52,17 @@ z = g(:,7);         % robot's translation z
 
 [actuator_length,~] = arclength(x,y,z,'s')   % length of the robot
 
-
+toc
 %% Figures
 
-figure(2)
+figure(1)
 subplot(1,2,1)
 plot3(x,y,-z)
 xlabel('x'); ylabel('y');zlabel('z')
 grid on; box on;
 subplot(1,2,2)
-plot(g(:,5),-g(:,7))
+hold on
+plot(x,-z)
 grid on;box on
 xlabel('x');ylabel('z')
 
