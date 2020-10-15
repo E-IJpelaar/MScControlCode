@@ -499,9 +499,17 @@ void Model::buildJacobian(float se, Mxf &J, Mxf &Jt){
 	K1J.noalias() = AdgInv*J;
 	J.noalias() = K1J;
 
+	cout << "AdgInv "<< AdgInv << endl;
+	cout << "K1J "<< AdgInv*J << endl;
+	cout << "J "<< K1J << endl;
+
 	// transform time-derivative Jacobian to local frame
 	K1Jt.noalias() = AdgInv*Jt;
 	Jt.noalias()  = K1Jt;
+	
+	cout << "K1Jt "<< AdgInv*Jt << endl;
+	cout << "Jt "<< K1Jt << endl;
+
 }
 
 //---------------------------------------------------

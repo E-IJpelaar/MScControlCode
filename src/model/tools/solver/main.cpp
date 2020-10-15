@@ -19,7 +19,8 @@ int main(int argc, char** argv)
 		cout << "Ba" << mdl.Ba << endl;
 		cout << "Bc" << mdl.Bc << endl;
 		cout << "q" << mdl.q << endl;
-		cout << "=xi" << mdl.xi << endl;
+		cout << "xi" << mdl.xi << endl;
+
 	}
 	else if(mdl.ENERGY_CONTROLLER){
 		mdl.implicit_simulate();

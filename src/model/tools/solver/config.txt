@@ -9,12 +9,12 @@ DISCONTINIOUS        = 0
 E1 = 0
 E2 = 0
 E3 = 1
-K1 = 1
-K2 = 0
+K1 = 0
+K2 = 1
 K3 = 0
 
 [model]
-NMODE   = 2
+NMODE   = 4
 NDISC   = 1
 SDOMAIN = 1
 TDOMAIN = 25
