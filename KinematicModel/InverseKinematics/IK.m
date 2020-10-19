@@ -1,17 +1,18 @@
 clear all;close all;clc;tic;
 %% Initial conditions
-Nmode = 2;                  % # shape functions to approximate strain/curvature
-shape = "legendre";             % poly = polynomial, cheby = chebyshev, legendre = legendre
+Nmode = 5;                  % # shape functions to approximate strain/curvature
+shape = "cheby";             % poly = polynomial, cheby = chebyshev, legendre = legendre
 L     = 1;                  % undeformed length of actuator
-
+rho = 1e-1;
 %% IK parameters
-x_d = [0.6;0.2;1.1];        % desired end-effector position (theta,x,z) 
+x_d = [-0.5;-0.4;1.2];        % desired end-effector position (theta,x,z) 
 epsilon = 0.001;            % max error norm
 % q0 = [0;0];                 % initial guess
 q0 = zeros(2*Nmode,1);      % initial guess
-it_max = 100;               % maximum amount of iterations
+it_max = 500;               % maximum amount of iterations
 it = 0;                     % set iterations to zero
-alpha = 5;                  % learning gain
+alpha = 20;                  % learning gain
+w = kron(eye(2),diag([1;1e-3;1e-3;1e-3;1e-3]));
 
 %% Error
 if length(q0) ~= 2*Nmode                    % throw error when q is not of satisfactory length
@@ -22,7 +23,8 @@ end
 [r,R,~,~] = Kinematics(q0,L,Nmode,shape);      % Check for intial guess
 
 R_end = quat2rotm(R(end,:));                % rotation matrix at sigma = L
-theta = acos((trace(R_end)-1)/2);           % rotation at sigma = L
+theta = atan2(R_end(1,3),R_end(1,1));
+% theta = acos((trace(R_end)-1)/2);           % rotation at sigma = L
 x = r(end,1);                              % end-effector x position
 z = r(end,3);                              % end-effector z position
 
@@ -35,7 +37,8 @@ while norm(e) > epsilon        % loop until error is smaller than max error norm
         [r,R,l,Ba] = Kinematics(q0,L,Nmode,shape); % call forward kinematics script
     
         R_end = quat2rotm(R(end,:));               % rotation matrix at sigma = L
-        theta = acos((trace(R_end)-1)/2);          % rotation at sigma = L
+%         theta = acos((trace(R_end)-1)/2);          % rotation at sigma = L
+        theta = atan2(R_end(1,3),R_end(1,1));
         x = r(end,1);                              % end-effector x position at sigma = L
         z = r(end,3);                              % end-effector z position at sigma = L
     
@@ -55,11 +58,17 @@ while norm(e) > epsilon        % loop until error is smaller than max error norm
         invAdg = adjointGInv(R(end,:),r(end,:));             % Calculate Adg^-1 of end-effector frame
         J = invAdg*J;                                        % Obtain final Jacobian
    
-   
-        pInvJ = pinv(J);                                     % Determine inverse Jacobian to update q0
+        
+        % reduncancy Jacobian.
+        
+%         pInvJ = pinv(J);                                     % Determine inverse Jacobian to update q0 %damped pseudo inverse
+        
+        pInvJ = w*J.'*inv(J*w*J.' + rho*eye(6));
+        
+%         N = eye(6)-pInvJ*J;      
         pInvJ = pInvJ(:,2:2:6);                              % "Sloppy" way to only use [theta,x,z] information in Jacobian
    
-        q0 = q0 + alpha*pInvJ*e;                             % update rule q
+        q0 = q0 +  alpha*pInvJ*e;                             % update rule q
         it = it+1;                                           % keep track of iterations
  
         if it >= it_max
@@ -75,11 +84,12 @@ q_opt = q0;                                           % Display optimized q0
 [r_opt,R_opt,~,~] = Kinematics(q_opt,L,Nmode,shape);  % Check output of algorith
 
 R_end_opt = quat2rotm(R_opt(end,:));                  % rotation matrix at sigma = L
-theta_opt = acos((trace(R_end_opt)-1)/2);             % rotation at sigma = L
+% theta_opt = acos((trace(R_end_opt)-1)/2);             % rotation at sigma = L
+theta_opt = atan2(R_end_opt(1,3),R_end_opt(1,1));
 
 x_opt = r_opt(:,1);                                   % optimized x 
 z_opt = r_opt(:,3);                                   % optimized z
-arctuator_length = arclength(x_opt,z_opt,'s')         % actuator length
+% arctuator_length = arclength(x_opt,z_opt,'s')         % actuator length
 
 figure(1)                                             % z desired and z optimum are inverted to show robot configuration
 plot(x_d(2),-x_d(3),'x')

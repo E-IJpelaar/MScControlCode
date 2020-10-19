@@ -26,9 +26,9 @@ if Nmode*n ~= length(q)                     % throw error when q is not of satis
 end
 
 %% Forward kinematics
-Q0 = rot2quat(eye(3));
+Q0 = rotm2quat(eye(3));
 r0 = zeros(3,1);
-g0 = [Q0;r0];
+g0 = [Q0(:);r0(:)];
 
 [l, g] = ode45(@(l,g) forwardKinematics(l,g,q,Ba,shape,Nmode),[0 L],g0); % solve forward kinematics
 

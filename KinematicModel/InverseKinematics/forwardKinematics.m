@@ -9,7 +9,7 @@ K = xi(1:3);  % curvatures
 T = xi(4:6);  % translations
 
 %% Calculate Q' and r'
-QK = quat2rot(Q)*K;  % intermediate calculation
+QK = quat2rotm(Q(:).')*K;  % intermediate calculation
 
 AQK = [0    ,-QK(1),-QK(2),-QK(3);
        QK(1), 0    ,-QK(3), QK(2);
@@ -17,7 +17,7 @@ AQK = [0    ,-QK(1),-QK(2),-QK(3);
        QK(3),-QK(2), QK(1), 0   ];  % see Boyer "forward dynamics of continuum and soft robots a strain parameterization based approach
      
 dQdl = (2*norm(Q))\(AQK*Q);     % Q'
-drdl = quat2rot(Q)*T;           % r'
+drdl = quat2rotm(Q(:).')*T;           % r'
 
 dgdl = [dQdl;drdl];             % g'
     
