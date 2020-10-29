@@ -6,13 +6,14 @@ L     = 1;                  % undeformed length of actuator
 rho = 1e-1;
 %% IK parameters
 x_d = [-0.5;-0.4;1.2];        % desired end-effector position (theta,x,z) 
-epsilon = 0.001;            % max error norm
+epsilon = 0.01;            % max error norm
 % q0 = [0;0];                 % initial guess
 q0 = zeros(2*Nmode,1);      % initial guess
 it_max = 500;               % maximum amount of iterations
 it = 0;                     % set iterations to zero
-alpha = 20;                  % learning gain
+alpha = 50;                  % learning gain
 w = kron(eye(2),diag([1;1e-3;1e-3;1e-3;1e-3]));
+beta = diag([0.01,1,1]);
 
 %% Error
 if length(q0) ~= 2*Nmode                    % throw error when q is not of satisfactory length
@@ -68,7 +69,8 @@ while norm(e) > epsilon        % loop until error is smaller than max error norm
 %         N = eye(6)-pInvJ*J;      
         pInvJ = pInvJ(:,2:2:6);                              % "Sloppy" way to only use [theta,x,z] information in Jacobian
    
-        q0 = q0 +  alpha*pInvJ*e;                             % update rule q
+%         q0 = q0 +  alpha*pInvJ*e;                             % update rule q
+        q0 = q0 +  alpha*pInvJ*beta*e;                             % update rule q
         it = it+1;                                           % keep track of iterations
  
         if it >= it_max
