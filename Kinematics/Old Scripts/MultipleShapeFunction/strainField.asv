@@ -1,0 +1,68 @@
+function [xi_hat] = strainField(l,g,q,Ba)
+global shape
+Nmode = 3;
+xi0 = [0;0;0;0;0;1];
+
+%% First set size of phi and q
+% q should have length = Nmode * collumn of Ba
+[~,m] = size(Ba);
+phi = zeros(m,1);
+
+if shape == "cheby"
+    for ii = 1:m
+        q_mode = q(1+(ii-1)*Nmode:ii*Nmode);
+        for n = 0:Nmode-1
+            phi(ii,1) = phi(ii,1) + (cos(n*acos(l))*q_mode(n+1));
+        end
+    end
+end
+
+if shape == "poly"   
+    for ii = 1:m
+        q_mode = q(1+(ii-1)*Nmode:ii*Nmode);
+        for n = 0:Nmode-1
+            phi(ii,1) = phi(ii,1) + (l^n)*q_mode(n+1);
+        end
+    end
+end
+
+if shape = "legendre"
+       for ii = 1:m
+        q_mode = q(1+(ii-1)*Nmode:ii*Nmode);
+        for n = 0:Nmode-1
+            if n == 0
+            phi(ii,1) = phi(ii,1) + 1*q(n+1);
+            elseif n == 1
+            phi(ii,1) = phi(ii,1) + l*q(n+1);  
+            elseif n == 2
+            phi(ii,1) = phi(ii,1) + 0.5*(3*l^2 - 1)*q(n+1);
+            elseif n == 3
+            phi(ii,1) = phi(ii,1)
+                        elseif n == 3
+            phi(ii,1) = phi(ii,1)
+            
+            
+            
+			if(i==2){ p(i) = 0.5*(3*s*s - 1);};
+			if(i==3){ p(i) = 0.5*(5*s*s*s - 3*s);};
+			if(i==4){ p(i) = 0.125*(35*s*s*s*s - 30*s*s + 3);};
+			if(i==5){ p(i) = 0.125*(63*s*s*s*s*s - 70*s*s*s + 15*s);};
+        
+        end
+    end
+end
+
+
+    
+
+
+
+
+
+xi = Ba*phi + xi0;
+
+
+xi_hat =  [  0       , -xi(3), xi(2) , xi(4);               
+            xi(3) ,  0      , -xi(1) , xi(5);
+           -xi(2) ,  xi(1)  ,  0     , xi(6);
+            0       ,0      ,  0     , 0   ];

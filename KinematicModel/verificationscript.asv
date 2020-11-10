@@ -1,8 +1,0 @@
-clear all;close all; clc;
-
-l = 1;
-g0 = eye(4);
-g0 = reshape(g0,[],1);
-
-[l,g] = ode45(@(l,g) ode_g(l,g),[0,l],g0);
-

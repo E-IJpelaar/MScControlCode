@@ -1,3 +1,0 @@
-function eta =strainField(t,y,Ba)
-Phi = eye(2);
-eta = Phi*q;

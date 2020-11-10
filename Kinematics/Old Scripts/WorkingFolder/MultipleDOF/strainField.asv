@@ -1,0 +1,14 @@
+function [xi] = strainField(l,q,Ba)
+
+xi0 = [0;0;0;0;0;1];
+phi = eye(length(q));  % one shape function
+
+
+   
+xi = (Ba*phi*q) +xi0;
+
+
+ 
+
+
+
