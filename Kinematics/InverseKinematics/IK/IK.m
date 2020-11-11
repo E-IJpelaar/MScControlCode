@@ -5,7 +5,7 @@ shape = "cheby";             % poly = polynomial, cheby = chebyshev, legendre = 
 L     = 1;                  % undeformed length of actuator
 rho = 1e-1;
 %% IK parameters
-x_d = [1.1;0.6;0.97];      % desired end-effector position (theta,x,z) 
+x_d = [-1.1;-0.6;0.97];      % desired end-effector position (theta,x,z) 
 epsilon = 0.01;            % max error norm
 q0 = zeros(2*Nmode,1);     % initial guess
 it_max = 1000;             % maximum amount of iterations
@@ -28,7 +28,7 @@ z = r(end,3);                              % end-effector z position
 
 f_q0 = [theta;x;z];                        % f(q) position for q0
 e = x_d-f_q0;                              % error between desired position and first guess
-
+e_norms = [0, norm(e)+0.1];
 %% Optimizing q0
 while norm(e) > epsilon        % loop until error is smaller than max error norm & maxium iterations is not exceeded
 
@@ -66,6 +66,17 @@ while norm(e) > epsilon        % loop until error is smaller than max error norm
             warning('Optimization has stopped, maximum iterations reached')
             break;
         end
+        
+        norme = norm(e);
+        e_norms = [e_norms(2), norme];
+        
+        if abs(e_norms(1)-e_norms(2)) <= 1e-8
+            warning('Optimization has stopped, error does not further converge. Increasing N_mode might help')
+            break;
+        end
+
+        disp(['Number of iterations ', num2str(it)])
+        disp(['Error norm ', num2str(norme)])
 
 end
 %% Compare desired end-effector position with achieved
@@ -86,9 +97,9 @@ plot(x_d(2),x_d(3),'x','MarkerSize',12)
 hold on; grid on; box on;
 plot(x_opt,z_opt,'LineWidth',2)
 xlabel('y [-]','FontSize',12);ylabel('z [-]','FontSize',12)
-axis([0 0.6  0 1.2])
+% axis([0 0.6  0 1.2])
 legend('Desired coordinate','IK solution','FontSize',12)
-axis([0 1 0 1])
+% axis([0 1 0 1])
 disp(['Error in x = ', num2str(x_d(2)- x_opt(end)) ,' [m]']);
 disp(['Error in z = ', num2str(x_d(3)- z_opt(end)) ,' [rad]']);
 disp(['Error in theta = ', num2str(x_d(1)- theta_opt) ,' [rad]']);

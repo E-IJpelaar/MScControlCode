@@ -5,7 +5,7 @@ shape = "cheby";             % poly = polynomial, cheby = chebyshev, legendre = 
 L     = 1;                  % undeformed length of actuator
 rho = 1e-1;
 %% IK parameters
-x_d = [1.1;0.6;0.97];        % desired end-effector position (theta,x,z) 
+x_d = [1.0766;0.6;0.9754];        % desired end-effector position (theta,x,z) 
 % x_d = [0.9;0.5;1];        % desired end-effector position (theta,x,z) 
 epsilon = 0.001;            % max error norm
 % q0 = [0;0];                 % initial guess
