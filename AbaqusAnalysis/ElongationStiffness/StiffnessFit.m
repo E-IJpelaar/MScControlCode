@@ -25,11 +25,11 @@ x0 = [100 100 100];
 
 %% Figures
 
-eps = linspace(0,0.05,1000);
+eps = linspace(-0.04,0.04,1000);
 figure(2)
 plot(e,F_eff,'o','MarkerSize',8,'MarkerFaceColor','b')
 hold on; grid on; box on;
-plot(eps,(alpha(1) + alpha(2).*((tanh(alpha(3).*eps)).^2 -1)).*eps)
+plot(eps,(alpha(1) + alpha(2).*((tanh(alpha(3).*eps)).^2 -1)).*eps,'LineWidth',1.5)
 xlabel('Elongation in y-direction [m]')
 ylabel('F [N]')
 legend('Simulated','Hyper-Elastic Model Fit')
@@ -37,7 +37,7 @@ legend('Simulated','Hyper-Elastic Model Fit')
 figure(3)
 plot(e,F_eff./e,'o','MarkerSize',8,'MarkerFaceColor','b')
 hold on; grid on; box on;
-plot(eps,alpha(1) + alpha(2).*((tanh(alpha(3).*eps)).^2 -1))
+plot(eps,alpha(1) + alpha(2).*((tanh(alpha(3).*eps)).^2 -1),'LineWidth',1.5)
 xlabel('Elongation in y-direction [m]')
 ylabel('K_{yy} = F/\epsilon [N/m]')
 legend('Simulated','Hyper-Elastic Model Fit')

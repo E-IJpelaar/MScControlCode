@@ -69,8 +69,8 @@ z_d = p_top(2);
 L_act = 64.5; % mm
 x_d = [-theta_d;z_d/L_act;y_d/L_act];
 
-Nmode = 1;                 % # shape functions to approximate strain/curvature
-epsilon = 0.03;            % max error norm
+Nmode = 2;                 % # shape functions to approximate strain/curvature
+epsilon = 0.01;            % max error norm
 
 [theta_opt, x_opt,q_opt] = InverseKinematics(x_d,epsilon,Nmode);
 

@@ -4,7 +4,7 @@ shape = "legendre";   % poly = polynomial, cheby = chebyshev, legendre = legendr
 Nmode = 1;            % # shape functions to approximate strain/curvature
 
 L = 1;                % undeformed length of actuator
-q = [0.2;0.1];    % q(t) = q(0)
+q = [-0.2;0.1];    % q(t) = q(0)
 
 %% Contrained strain/curvature, 0 = contrained 1 = free
 K1 = 0;  % curvatures
@@ -50,7 +50,7 @@ x = g(:,5);         % robot's translation x
 y = g(:,6);         % robot's translation y
 z = g(:,7);         % robot's translation z
 
-[actuator_length,~] = arclength(x,y,z,'s')   % length of the robot
+% [actuator_length,~] = arclength(x,y,z,'s')   % length of the robot
 
 toc
 %% Figures
@@ -65,7 +65,7 @@ hold on
 plot(x,z,'LineWidth',2)
 grid on;box on
 xlabel('y [-]','FontSize',14);ylabel('z [-]','FontSize',14)
-axis([0 0.15 0 1.2])
+% axis([0 0.15 0 1.2])
 
 toc
 
