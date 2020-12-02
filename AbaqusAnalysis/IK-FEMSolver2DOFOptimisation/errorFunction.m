@@ -26,4 +26,33 @@ arclen_mean = arclength(z_mid_avgs,y_mid_avgs,'s');  % indicated arc-length base
 % term 3: error in arclength between data and forward model to be minimized
 % term 4: error in position first end-effector coordinate to be minimized
 % term 5: error in position second end-effector coordinate to be minimized
-E = sum((z_mid_avgs - x_q).^2 + (y_mid_avgs-z_q).^2 + (arclen_mean-arclen).^2+ (z_ds-x_fkin(end)).^2 + (y_ds-z_fkin(end)).^2 );
+% E = sum((z_mid_avgs - x_q).^2 + (y_mid_avgs-z_q).^2 + (arclen_mean-arclen).^2+ (z_ds-x_fkin(end)).^2 + (y_ds-z_fkin(end)).^2 );
+% term 6: minimize potential energy q'Qq
+
+%% Optimized coefficients order of tuning tuned for Nmode = 2
+% a1 = 39; 1
+% a2 = 39; 2
+% a3 = 35; 5
+% a4 = 9; 4
+% a5 = 9; 3
+% Q  = 0*eye(Nmode*2); %E = 0.0250;
+
+% a1 = 39;  
+% a2 = 39;
+% a3 = 35;
+% a4 = 9;
+% a5 = 9;
+
+a1 = 50;  
+a2 = 50;
+a3 = 35;
+a4 = 10;
+a5 = 10;
+
+
+Q  = 0.01*eye(Nmode*2); %E = 0.0250; % todo add weighing in Q to stress lower order shape functions
+% Q  = diag([0.01,1,10,100,0.01,1,10,100]);
+% E = sum(a1*(z_mid_avgs - x_q).^2 + a2*(y_mid_avgs-z_q).^2 + a3*(arclen_mean-arclen).^2+ a4*(z_ds-x_fkin(end)).^2 + a5*(y_ds-z_fkin(end)).^2);
+% E = q'*Q*q+ sum(a1*(z_mid_avgs - x_q).^2 + a2*(y_mid_avgs-z_q).^2 + a3*(arclen_mean-arclen).^2+ a4*(z_ds-x_fkin(end)).^2 + a5*(y_ds-z_fkin(end)).^2);
+
+E = q'*Q*q+ + a3*(arclen_mean-arclen).^2+ a4*(z_ds-x_fkin(end)).^2 + a5*(y_ds-z_fkin(end)).^2 + sum(a1*(z_mid_avgs - x_q).^2 + a2*(y_mid_avgs-z_q).^2 );

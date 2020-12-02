@@ -6,13 +6,13 @@ clear all;close all; clc; tic;
 
 %% IK settings
 L_act = 64.5;              % [mm] length of the actuator
-Nmode = 2;                 % # shape functions to approximate strain/curvature
+Nmode = 1;                 % # shape functions to approximate strain/curvature
 shape = 'cheby';           % type of shape function to be used
 epsilon = 0.01;            % max error norm for IK solution  
 
 %% Get nodal information from FEM simulations
 % all nodes
-filename_allnodes = 'rot60kPa.txt' ;                
+filename_allnodes = '60kPa.txt' ;                
 [all_nodes] = allNodes(filename_allnodes);
 
 % nodes of Interest
@@ -72,6 +72,10 @@ quiver(p_top(2),p_top(1),n_top(2)/2,n_top(1)/2,50,'r','linewidth',2)
 quiver(p_bot(2),p_bot(1),n_bot(2)/2,n_bot(1)/2,50,'b','linewidth',2)
 xlabel('z [mm]');ylabel('y [mm]')
 legend('deformed top plate','deformed centre line','undeformed bottom plate','point on plane top','point on plane bottom','normal vector plane','normal vector plane')
+axis equal
+
+
+
 
 % scale parameters
 z_ds = z_d/L_act;
@@ -79,25 +83,28 @@ y_ds = y_d/L_act;
 y_mid_avgs = y_mid_avg/L_act;
 z_mid_avgs = z_mid_avg/L_act;
 
-% intermediate plot 
-figure(2)
-plot(z_ds,y_ds,'kx','MarkerSize',15,'LineWidth',1.5)
-hold on; grid on;
-plot(z_mid/L_act,y_mid/L_act,'bo')
-plot(z_mid_avgs,y_mid_avgs,'rx','MarkerSize',15,'LineWidth',1.5)
-xlabel('z [mm]');ylabel('y [mm]')
-legend('end-effector position','middle nodes FEM','cluster mean value')
+% % intermediate plot 
+% figure(2)
+% plot(z_ds,y_ds,'kx','MarkerSize',15,'LineWidth',1.5)
+% hold on; grid on;
+% plot(z_mid/L_act,y_mid/L_act,'bo')
+% plot(z_mid_avgs,y_mid_avgs,'rx','MarkerSize',15,'LineWidth',1.5)
+% xlabel('z [mm]');ylabel('y [mm]')
+% legend('end-effector position','middle nodes FEM','cluster mean value')
 
 %% Optimization
 x_d = [z_ds;y_ds];                                    % scaled end-effector position
 [x0,q0] = InverseKinematics2DOF(x_d,epsilon,Nmode); % initial q0 solving IK
-% q0 = zeros(1,Nmode*2);
+% q0 = rand(2*Nmode,1);
 fun = @(x)errorFunction(x,z_ds,y_ds,z_mid_avgs,y_mid_avgs,Nmode,shape); % write as a function where only x is optimized
 [q_opt,~,exitflag] = fmincon(fun,q0);                 % optimization
 
 % Optimal solution
 [x_opt_f,z_opt_f] = funcKinematics(Nmode,shape,q_opt);
+E = errorFunction(q_opt,z_ds,y_ds,z_mid_avgs,y_mid_avgs,Nmode,shape)
 toc
+
+
 
 figure(3)
 plot(z_mid_avg,y_mid_avg,'x','MarkerSize',15,'LineWidth',1.5)
@@ -108,6 +115,18 @@ plot(x0(:,1)*L_act,x0(:,2)*L_act,'LineWidth',1)
 legend('mean of the mid nodes','end-effector','optimized IK solution','IK solution (q0)')
 xlabel('z [mm]');ylabel('y [mm]')
 
+close all
+figure(4)
+plot(-x_opt_f*L_act,z_opt_f*L_act,'LineWidth',2)
+hold on; grid on; box on;
+plot(-z_mid,y_mid,'ro', 'MarkerSize',8)
+plot(-z_mid_avg,y_mid_avg,'x','MarkerSize',20,'LineWidth',1.5)
+plot(-z_d,y_d,'kx','MarkerSize',20,'LineWidth',1.5)
+hold on;grid on;
+legend('Inverse kinematic fit','Backbone nodes','Weighted average','End-effector','FontSize',12)
+xlabel('x [mm]','FontSize',12);ylabel('y [mm]','FontSize',12)
+axis equal
+axis([-40 40 -10 100 ])
 
 
 

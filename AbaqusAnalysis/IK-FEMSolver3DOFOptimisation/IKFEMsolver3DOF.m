@@ -93,8 +93,8 @@ if mean(z_ds) < 0 && mean(y_ds) > 0 ||  mean(z_ds) > 0 && mean(y_ds) < 0
     theta_d = -theta_d;
 end
 x_d = [theta_d; z_ds;y_ds];                                    % scaled end-effector position
-[theta0,x0,q0] = InverseKinematics3DOF(x_d,epsilon,Nmode);   % initial q0 solving IK
-% q0 = zeros(1,Nmode*2);
+% [theta0,x0,q0] = InverseKinematics3DOF(x_d,epsilon,Nmode);   % initial q0 solving IK
+q0 = 1e-3*rand(1,Nmode*2);
 fun = @(x)errorFunction(x,theta_d,z_ds,y_ds,z_mid_avgs,y_mid_avgs,Nmode,shape); % write as a function where only x is optimized
 [q_opt,~,exitflag] = fmincon(fun,q0);                 % optimization
 

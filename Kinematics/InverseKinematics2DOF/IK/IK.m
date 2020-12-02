@@ -1,17 +1,18 @@
-clear all;close all;clc;tic;
+\Stclear all;close all;clc;tic;
 %% Initial conditions
-Nmode = 1;                  % # shape functions to approximate strain/curvature
+Nmode = 9;                  % # shape functions to approximate strain/curvature
 shape = "cheby";            % poly = polynomial, cheby = chebyshev, legendre = legendre
 L     = 1;                  % undeformed length of actuator
 rho = 1e-1;
 %% IK parameters
-x_d = [-0.6;0.97];      % desired end-effector position (x,z) 
+x_d = [0;0.97];      % desired end-effector position (x,z) 
 epsilon = 0.01;            % max error norm
 q0 = zeros(2*Nmode,1);     % initial guess
 it_max = 1000;             % maximum amount of iterations
 it = 0;                    % set iterations to zero
 alpha = 50;                % learning gain
 w = kron(eye(2),diag([ones(1,Nmode)])); % each q is equally important for diag(1)
+% w = kron(eye(2),diag([1,1e-3*ones(1,Nmode-1)])); % each q is equally important for diag(1)
 beta = diag([1,1]);      % each state q is equally important for diag(1)
 %% Error
 if length(q0) ~= 2*Nmode                    % throw error when q is not of satisfactory length
@@ -51,8 +52,8 @@ while norm(e) > epsilon        % loop until error is smaller than max error norm
         invAdg = adjointGInv(R(end,:),r(end,:));             % Calculate Adg^-1 of end-effector frame
         J = invAdg*J;                                        % Obtain final Jacobian
  
-              
-        pInvJ = (w*J.')/(J*w*J.' + rho*eye(6));              % Determine inverse Jacobian to update q0 %damped pseudo inverse    
+        pInvJ = inv(J*w*J.' + rho*eye(6))*(w*J.');     
+%         pInvJ = (w*J.')/(J*w*J.' + rho*eye(6));              % Determine inverse Jacobian to update q0 %damped pseudo inverse    
         pInvJ = pInvJ(:,4:2:6);                              % "Sloppy" way to only use [theta,x,z] information in Jacobian
    
         q0 = q0 +  alpha*pInvJ*beta*e;                       % update rule q
@@ -95,7 +96,7 @@ disp(['Error in x = ', num2str(x_d(1)- x_opt(end)) ,' [m]']);
 disp(['Error in z = ', num2str(x_d(2)- z_opt(end)) ,' [rad]']);
 disp(['Amount of iterations = ', num2str(it)]);
 
-
+sum(q_opt)
 
 
 
