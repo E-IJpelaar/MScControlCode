@@ -4,7 +4,7 @@ clear all;close all; clc;
 % This is very inconvenient, so when adapting the scripts, espescially
 % while plotting, take this into account and check if you plot is correct.
 
-
+mm2m = 1e-3; % converting factor
 %% Get nodal information from FEM simulations
 % all nodes
 filename_allnodes = 'rot60kPa.txt' ;                
@@ -58,7 +58,7 @@ quiver(p_top(2),p_top(1),n_top(2)/2,n_top(1)/2,50,'r','linewidth',2)
 quiver(p_bot(2),p_bot(1),n_bot(2)/2,n_bot(1)/2,50,'b','linewidth',2)
 xlabel('z [mm]');ylabel('y [mm]')
 legend('deformed top plate','deformed centre line','undeformed bottom plate','point on plane top','point on plane bottom','normal vector plane','normal vector plane')
-
+axis equal
 
 %% Find IK model
 
@@ -66,23 +66,23 @@ theta_d = acos(dot(n_bot,n_top));     % orientation of the deformed plane
 y_d = p_top(1);                       % point on plane
 z_d = p_top(2);                         
 
-L_act = 64.5; % mm
-x_d = [-theta_d;z_d/L_act;y_d/L_act];
+L_act = 64.5e-3; % m
+x_d = [-theta_d;z_d*mm2m;y_d*mm2m];
 
 Nmode = 2;                 % # shape functions to approximate strain/curvature
-epsilon = 0.01;            % max error norm
+epsilon = 0.0001;          % max error norm
 
-[theta_opt, x_opt,q_opt] = InverseKinematics(x_d,epsilon,Nmode);
+[theta_opt, x_opt,q_opt] = InverseKinematics3DOF(x_d,epsilon,Nmode,L_act);
 
 
 figure(2)
-plot(z_d,y_d,'bx','MarkerSize',15)
+plot(z_d*mm2m,y_d*mm2m,'bx','MarkerSize',15)
 hold on;grid on;
-plot(x_opt(:,1)*L_act,x_opt(:,2)*L_act,'b','LineWidth',2)
-plot(z_mid,y_mid,'ro')
+plot(x_opt(:,1),x_opt(:,2),'b','LineWidth',2)
+plot(z_mid*mm2m,y_mid*mm2m,'ro')
 xlabel('z [mm]');ylabel('y [mm]')
 legend('End effector FEM simulation','Inverse Kinematic Solution','Deformed centreline FEM')
-
+axis equal
 
 
 %% Only USE this for a 3D plot, not necessary

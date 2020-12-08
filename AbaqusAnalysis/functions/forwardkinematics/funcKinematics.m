@@ -1,11 +1,4 @@
-clear all;close all;clc;tic
-%% Parameters
-shape = "legendre";   % poly = polynomial, cheby = chebyshev, legendre = legendre
-Nmode = 1;            % # shape functions to approximate strain/curvature
-
-L = 64.5e-3;                % undeformed length of actuator
-q = [-30;0.1];    % q(t) = q(0)
-
+function [x,z] = funcKinematics(Nmode,shape,q,L)
 %% Contrained strain/curvature, 0 = contrained 1 = free
 K1 = 0;  % curvatures
 K2 = 1;
@@ -42,32 +35,9 @@ Q0 = rot2quat(eye(3));
 r0 = zeros(3,1);
 g0 = [Q0;r0];
 
-[l, g] = ode45(@(l,g) forwardKinematics(l,g,q,Ba,shape,Nmode),[0 L],g0); % solve forward kinematics
-
+[l, g] = ode45(@(l,g) forwardKinematics(l,g,q,Ba,shape,Nmode,L),[0 L],g0); % solve forward kinematics
 %% Interpret data
 R = g(:,1:4);       % robot's rotation expressed in quaternions
 x = g(:,5);         % robot's translation x
 y = g(:,6);         % robot's translation y
 z = g(:,7);         % robot's translation z
-
-[actuator_length,~] = arclength(x,y,z,'s')   % length of the robot
-
-toc
-%% Figures
-
-figure(1)
-subplot(1,2,1)
-plot3(x,y,-z)
-xlabel('x'); ylabel('y');zlabel('z')
-grid on; box on;
-subplot(1,2,2)
-hold on
-plot(x,z,'LineWidth',2)
-grid on;box on
-xlabel('y [-]','FontSize',14);ylabel('z [-]','FontSize',14)
-% axis([0 0.15 0 1.2])
-axis equal
-
-toc
-
-

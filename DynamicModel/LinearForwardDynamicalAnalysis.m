@@ -3,23 +3,23 @@ clear all;close all;clc;
 % actuator length
 L0 = 64.5;                % [mm]
 
-% Mass matrix
+% Constant mass matrix 
 Me  = 0.0177;             % [kg] Mass
 Jk  = 1.21e-5;            % [kgm^2] Inertia
-Jk  = 0.0121;
+% Jk  = 0.0121;
 M = diag([Me,Jk]);        % Mass matrix
 invM = inv(M);            % Inverse mass matrix
 
 % Damping matrix
-D_e = 60;                 % Linear damping on elongation
+D_e = 30;                 % Linear damping on elongation
 D_k = 20;                 % Linear damping on bending
 D = diag([D_e,D_k]);      % Damping matrix
 invD = inv(D);            % Inverse of damping matrix
 
 % Stiffness matrix
-Ke = 20;                  % Elongation stiffness
-Kk = 50;                  % Rotation stiffness 
-K = diag([Ke,Ke]);        % Stiffness matrix
+Ke = 35;                  % Elongation stiffness (+/-)
+Kk = 0.12;                % Rotation stiffness (+/-)
+K = diag([Ke,Kk]);        % Stiffness matrix
 
 
 % Pressure mapping
@@ -34,25 +34,25 @@ O2 = zeros(2,2);
 I2 = eye(2,2);
 
 A = [ O2     , I2     ;
-     -invM\K ,-invM\D];
+     -invM*K ,-invM*D];
  
 B = [ O2;
-      invM\H   ];
+      invM*H   ];
   
 %% Solve SS
 % initial conditions 
 
 e0   = 0.1;                          % [-]    initial elongation
-rot0 = 1;                           % [deg]  initial rotation
+rot0 = 10;                           % [deg]  initial rotation
 k0   = deg2rad(rot0)/(e0*L0);     % [1/mm] initial curvature
 q0   = [e0 k0];
 
-de0   = 0.0;                           % [1/s]   initial elongation rate 
+de0   = 0.00;                           % [1/s]   initial elongation rate 
 dk0   = k0*L0*de0;                % [1/mms] initial curvature rate
 dq0   = [de0 dk0];
 
 x0 = [q0 dq0];                       % initial condition vector
-[t,x] = ode45(@(t,x) ForwardDynamics(t,x,A,B),[0 20],x0);
+[t,x] = ode45(@(t,x) ForwardDynamics(t,x,A,B),[0 100],x0);
   
  
 %% Figures

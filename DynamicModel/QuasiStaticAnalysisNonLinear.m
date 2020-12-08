@@ -1,6 +1,6 @@
 clear all;close all;clc;
 %% Paramters
-L_act = 64.5;
+L_act = 64.5e-3;
 A_eff = 0.1462;   % [m^2] effective area on which pressure acts (FEM determined)
 r = 12.56e-3;     % [m]   lever on which force acts (geometrically determined)
 

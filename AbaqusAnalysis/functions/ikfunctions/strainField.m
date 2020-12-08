@@ -1,11 +1,10 @@
-function [xi] = strainField(l,q,Ba,shape,Nmode)
+function [xi] = strainField(l,q,Ba,shape,Nmode,L)
 %% Initial undeformed shape
 xi0 = [0;0;0;0;0;1];
-L0 = 64.5e-3;
 %% Calculate strains and curvatures with shape functions
 [~,m] = size(Ba);        % amount of active strains
 phi_q = zeros(m,1);      % shape function vector (phi*q)
-l = l/L0;
+l = l/L;                 % normalize shape function to 1
 if shape == "cheby"      % chebyshev shape functions
     for ii = 1:m
         q_mode = q(1+(ii-1)*Nmode:ii*Nmode);

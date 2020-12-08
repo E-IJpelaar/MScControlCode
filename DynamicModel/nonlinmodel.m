@@ -1,11 +1,11 @@
 function [dxdt] = nonlinmodel(t,x,invD,H)
 x = [x(1);x(2)];
 
-p = inv(H)*(inv(D)*dxdt + K*x)
-p1 = pressure1(t);
-p2 = pressure2(t);
+% p = inv(H)*(inv(D)*dxdt + K*x)
+% p1 = pressure1(t);
+% p2 = pressure2(t);
 
-p1 = 10;%75+25.*sin(2.*pi.*0.1.*t);
+p1 = 0;%75+25.*sin(2.*pi.*0.1.*t);
 p2 = 10;%75-25.*sin(2.*pi.*0.1.*t);
 
 p = [p1;p2];
