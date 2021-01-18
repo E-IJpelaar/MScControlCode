@@ -1,10 +1,10 @@
-function [xi] = strainField(l,q,Ba,shape,Nmode,L)
+function [xi] = strainField(l,q,Ba,shape,Nmode,L0)
 %% Initial undeformed shape
-xi0 = [0;0;0;0;0;1];
+xi0 = [0;0;0;1;0;0];
 %% Calculate strains and curvatures with shape functions
 [~,m] = size(Ba);        % amount of active strains
 phi_q = zeros(m,1);      % shape function vector (phi*q)
-l = l/L;                 % normalize shape function to 1
+l = l/L0;                % normalize shape function to 1
 if shape == "cheby"      % chebyshev shape functions
     for ii = 1:m
         q_mode = q(1+(ii-1)*Nmode:ii*Nmode);
@@ -23,7 +23,7 @@ if shape == "poly"       % polynomial shape functions
     end
 end
 
-if shape == "legendre"  % legengdre shape functions
+if shape == "legendre"  % legendre shape functions
     for ii = 1:m
         q_mode = q(1+(ii-1)*Nmode:ii*Nmode);
         for n = 0:Nmode-1
@@ -47,6 +47,6 @@ if shape == "legendre"  % legengdre shape functions
 end
 
 %% Determine strain and curvature vector and matrix
-xi = Ba*phi_q + xi0;    % determine xi vector
+xi = Ba*phi_q + xi0;              % determine xi vector
 xi(1:3) = xi(1:3)*norm(xi(4:6));  % account for curvature due to elongation
 

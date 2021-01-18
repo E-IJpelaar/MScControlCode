@@ -1,11 +1,12 @@
-function [Baphi_s] = shapeValue(shape,Nmode,l,Ba,L)
+function [Baphi_s] = shapeValue(shape,Nmode,l,Ba,L0)
 %% Calculate strains and curvatures with shape functions
 [n,m] = size(Ba);        % amount of active strains
 
 Phi = zeros(n,Nmode*m);  % pre allocate
 [row,~] = find(Ba == 1); 
-l = l/L;                   % normalize shape function to length 1
-if shape == 'cheby'        % chebyshev shape functions
+l = l/L0;                 % normalize shape function to length 1
+
+if strcmp(shape,'cheby')        % chebyshev shape functions
     for ii = 1:length(row)
         phi=zeros(1,Nmode);
             for kk = 0:Nmode-1
@@ -15,7 +16,7 @@ if shape == 'cheby'        % chebyshev shape functions
     end 
 
     
-elseif shape == "poly"       % polynomial shape functions
+elseif strcmp(shape,"poly")       % polynomial shape functions
     for ii = 1:length(row)
         phi=zeros(1,Nmode);
         for kk = 0:Nmode-1
@@ -26,7 +27,7 @@ elseif shape == "poly"       % polynomial shape functions
 
 
 
-elseif shape == "legendre"  % legengdre shape functions
+elseif strcmp(shape,"legendre")  % legengdre shape functions
     for ii = 1:length(row)
         phi=zeros(1,Nmode);
         for kk = 0:Nmode-1
@@ -54,4 +55,4 @@ else
    error('This shape has not been defined')
 end
 
-Baphi_s = Phi;
+Baphi_s = Phi;  % Phi is equal to Ba*Phi because when building Phi we already place entries at entries Ba

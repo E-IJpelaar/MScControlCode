@@ -1,4 +1,4 @@
-function [r,R,l,Ba] = Kinematics(q,L,Nmode,shape)     
+function [r,R,l,Ba] = Kinematics(q,L,Nmode,shape,L0)     
 %% Contrained strain/curvature, 0 = contrained 1 = free
 K1 = 0;  % curvatures
 K2 = 1;
@@ -30,7 +30,7 @@ Q0 = rotm2quat(eye(3));
 r0 = zeros(3,1);
 g0 = [Q0(:);r0(:)];
 
-[l, g] = ode45(@(l,g) forwardKinematics(l,g,q,Ba,shape,Nmode,L),[0 L],g0); % solve forward kinematics
+[l, g] = ode45(@(l,g) forwardKinematics(l,g,q,Ba,shape,Nmode,L0),[0 L0],g0); % solve forward kinematics
 
 %% Interpret data
 R = g(:,1:4);       % robot's rotation expressed in quaternions

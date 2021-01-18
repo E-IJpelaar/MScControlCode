@@ -6,7 +6,7 @@ rho = 1e-1;
 q0 = zeros(2*Nmode,1);     % initial guess
 it_max = 10000;             % maximum amount of iterations
 it = 0;                    % set iterations to zero
-alpha = 1000;                % learning gain
+alpha = 50;                % learning gain
 w = kron(eye(2),diag([ones(1,Nmode)])); % each q is equally important for diag(1)
 beta = diag([1,1]);      % each state q is equally important for diag(1)
 
@@ -34,11 +34,11 @@ while norm(e) > epsilon        % loop until error is smaller than max error norm
     
         J = zeros(6,2*Nmode);                      % Pre-allocate "new" Jacobian after each iteration
             
-            for ii = 1:length(l)                       % Determine Jacobian by integrating over L ( int*(0,sigma) Adg*Ba*Phi(sigma) dsigma)
-        
+            for ii = 2:length(l)                       % Determine Jacobian by integrating over L ( int*(0,sigma) Adg*Ba*Phi(sigma) dsigma)
+                dh = l(ii)-l(ii-1);
                 Baphi_s = shapeValue(shape,Nmode,l(ii),Ba,L);    % Determine Ba*Phi_s for each sigma
                 Adg = adjointG(R(ii,:),r(ii,:));               % Calculate Adg for each sigma
-                J = J + Adg*Baphi_s;                           % Add contribution of each delta sigma to total Jacobian
+                J = J + Adg*Baphi_s*dh;                           % Add contribution of each delta sigma to total Jacobian
     
             end
     

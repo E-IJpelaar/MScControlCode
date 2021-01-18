@@ -1,8 +1,8 @@
-\Stclear all;close all;clc;tic;
+clear all;close all;clc;tic;
 %% Initial conditions
 Nmode = 9;                  % # shape functions to approximate strain/curvature
 shape = "cheby";            % poly = polynomial, cheby = chebyshev, legendre = legendre
-L     = 1;                  % undeformed length of actuator
+L0     = 1;                  % undeformed length of actuator
 rho = 1e-1;
 %% IK parameters
 x_d = [0;0.97];      % desired end-effector position (x,z) 
@@ -43,7 +43,7 @@ while norm(e) > epsilon        % loop until error is smaller than max error norm
             
             for ii = 1:length(l)                       % Determine Jacobian by integrating over L ( int*(0,sigma) Adg*Ba*Phi(sigma) dsigma)
         
-                Baphi_s = shapeValue(shape,Nmode,l(ii),Ba);    % Determine Ba*Phi_s for each sigma
+                Baphi_s = shapeValue(shape,Nmode,l(ii),Ba,L0);    % Determine Ba*Phi_s for each sigma
                 Adg = adjointG(R(ii,:),r(ii,:));               % Calculate Adg for each sigma
                 J = J + Adg*Baphi_s;                           % Add contribution of each delta sigma to total Jacobian
     

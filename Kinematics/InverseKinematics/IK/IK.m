@@ -1,3 +1,5 @@
+%% Only works for L = 1;
+
 clear all;close all;clc;tic;
 %% Initial conditions
 Nmode = 2;                  % # shape functions to approximate strain/curvature
@@ -5,12 +7,12 @@ shape = "cheby";            % poly = polynomial, cheby = chebyshev, legendre = l
 L     = 1;                  % undeformed length of actuator
 rho = 1e-1;
 %% IK parameters
-x_d = [-1.1;-0.6;0.97];      % desired end-effector position (theta,x,z) 
+x_d = [0;-0.6;0.97];      % desired end-effector position (theta,x,z) 
 epsilon = 0.003;            % max error norm
 q0 = zeros(2*Nmode,1);     % initial guess
 it_max = 1000;             % maximum amount of iterations
 it = 0;                    % set iterations to zero
-alpha = 10;                % learning gain
+alpha = 1;                % learning gain
 w = kron(eye(2),diag([ones(1,Nmode)])); % each q is equally important for diag(1)
 beta = diag([1,1,1]);      % each state q is equally important for diag(1)
 %% Error
@@ -44,11 +46,12 @@ while norm(e) > epsilon        % loop until error is smaller than max error norm
     
         J = zeros(6,2*Nmode);                      % Pre-allocate "new" Jacobian after each iteration
             
-            for ii = 1:length(l)                       % Determine Jacobian by integrating over L ( int*(0,sigma) Adg*Ba*Phi(sigma) dsigma)
-        
-                Baphi_s = shapeValue(shape,Nmode,l(ii),Ba);    % Determine Ba*Phi_s for each sigma
+            for ii = 2:length(l)                       % Determine Jacobian by integrating over L ( int*(0,sigma) Adg*Ba*Phi(sigma) dsigma)
+                
+                dh = l(ii)-l(ii-1);
+                Baphi_s = shapeValueIK3DOF(shape,Nmode,l(ii),Ba);    % Determine Ba*Phi_s for each sigma
                 Adg = adjointG(R(ii,:),r(ii,:));               % Calculate Adg for each sigma
-                J = J + Adg*Baphi_s;                           % Add contribution of each delta sigma to total Jacobian
+                J = J + Adg*Baphi_s*dh;                           % Add contribution of each delta sigma to total Jacobian
     
             end
     

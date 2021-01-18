@@ -12,13 +12,13 @@ shape = 'cheby';           % type of shape function to be used
 epsilon = 0.005;            % max error norm for IK solution  
 
 %% Data location
-data_location = 'C:\Users\s159261\OneDrive - TU Eindhoven\Documents\GitHub\MScControlCode\AbaqusAnalysis\DataFiles\ForceAnalysis';
+% data_location = 'C:\Users\s159261\OneDrive - TU Eindhoven\Documents\GitHub\MScControlCode\AbaqusAnalysis\DataFiles\ForceAnalysis';
 % data_location = 'C:\Users\s159261\OneDrive - TU Eindhoven\Documents\GitHub\MScControlCode\AbaqusAnalysis\DataFiles\ElongationAnalysis'; % select folder in which the data is stored
-% data_location = 'C:\Users\s159261\OneDrive - TU Eindhoven\Documents\GitHub\MScControlCode\AbaqusAnalysis\DataFiles\RotationAnalysis';
+data_location = 'C:\Users\s159261\OneDrive - TU Eindhoven\Documents\GitHub\MScControlCode\AbaqusAnalysis\DataFiles\RotationAnalysis';
 files = dir(fullfile(data_location, '*.txt'));  % check for all txt files
 
 %% Pre allocate data to be saved
-data = zeros(2+2*Nmode,length(files));
+data = zeros(3+2*Nmode,length(files));
 
 for kk = 1:length(files)                         % loop through all data files
 
@@ -145,8 +145,8 @@ title([num2str(data(1,kk)),' kPa'])
 axis equal
 
 data(2:2+length(q_opt)-1,kk) = q_opt;
-data(end,kk) = E;
-
+data(end-1,kk) = E;
+data(end,kk) = theta_d;
 % clearvars for next file except those mentioned below
 clearvars -except files data L_act Nmode Nmodes shape epsilon data_location files mm2m L
 
