@@ -1,4 +1,4 @@
-function [Mq] = massMatrix(e,k,L0,m,w,d,Nmode,shape,space_step)
+function [M] = massMatrix(k,e,L0,m,w,d,Nmode,shape,space_step)
 q = [k,e];       % modal coordinates (check order first curvature then elongation)
 %% Contrained strain/curvature, 0 = contrained 1 = free
 K1 = 0;  % curvatures
@@ -19,8 +19,6 @@ a = find(xi_ac == 1);                       % inidices active DOF
     end   
     
 %% New implementation
-% 
-
 
 Q0 = rot2quat(eye(3)); % initial no rotation 
 r0 = zeros(3,1);       % position vector is 0
@@ -33,7 +31,6 @@ Jt = J0;
 M0 = zeros(length(q),length(q));
 M = M0;
 
-% Gq = zeros(n,1);
 
 d_sigma = L0/space_step;
 L = 0:d_sigma:L0;
@@ -42,12 +39,10 @@ for ii = 1:length(L)
     
     sigma = L(ii);
     [dg1,dJt1,dM1] = massODE(sigma,g,Jt,q,Ba,shape,Nmode,L0,m,w,d,d_sigma);
-    [dg2,dJt2,dM2] = massODE(sigma+(2/3*d_sigma),g+(2/3)*d_sigma*g,Jt+(2/3)*d_sigma*Jt,q,Ba,shape,Nmode,L0,m,w,d,d_sigma);
+    [dg2,dJt2,dM2] = massODE(sigma+(2/3*d_sigma),g+(2/3)*d_sigma*dg1,Jt+(2/3)*d_sigma*dJt1,q,Ba,shape,Nmode,L0,m,w,d,d_sigma);
     
     g = g + (d_sigma/4 * (dg1 + 3*dg2));
     Jt = Jt + (d_sigma/4 * (dJt1 + 3*dJt2));
     M = M + (d_sigma/4 * (dM1 + 3*dM2)); 
       
 end
-
-Mq = rot90(M,2);

@@ -5,6 +5,7 @@ xi0 = [0;0;0;1;0;0];
 [~,m] = size(Ba);        % amount of active strains
 phi_q = zeros(m,1);      % shape function vector (phi*q)
 l = l/L0;                % normalize shape function to 1
+
 if shape == "cheby"      % chebyshev shape functions
     for ii = 1:m
         q_mode = q(1+(ii-1)*Nmode:ii*Nmode);

@@ -10,12 +10,12 @@ shape = 'cheby';
 %% Parameters
 % geometric properties
 L0 = 64.5*mm2m;           % [m] initial length
-m  = 30*g2kg;            % [kg] actuator weight
+m  = 30*g2kg;             % [kg] actuator weight
 w = 64*mm2m;              % [m] width of actuator
 d = 25*mm2m;              % [m] depth of the actuator
 
 % Damping matrix             
-D_k = 2e-6;               % [Nsm]Linear damping on bending (order E-5)
+D_k = 1e-5;               % [Nsm]Linear damping on bending (order E-5)
 D_e = 0.8;                % [Ns/m]Linear damping on elongation (order E-3)
 D = diag([D_k,D_e]);      % Damping matrix
 
@@ -77,9 +77,4 @@ legend('Actuator length','Curvature','Steady-state rotation FEM')
 legend('Actuator length','Curvature')
 toc
 
-figure(3)
-plot(t,k,'LineWidth',1)
-hold on;grid on;
-xlabel('Time [s]');ylabel('\kappa [1/m]')
-legend('Non-linear M','Linear M')
 

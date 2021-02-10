@@ -40,13 +40,13 @@ legend('Curvature \kappa [1/m]','Elongation \epsilon [-]','FontSize',12,'Locatio
 
 
 figure(3)
-yyaxis left
-plot(p1,-pq1,'bx','MarkerSize',8,'LineWidth',1.5) % only half is simulated, the rest is assumed
+% yyaxis left
+% plot(p1,-pq1,'bx','MarkerSize',8,'LineWidth',1.5) % only half is simulated, the rest is assumed
 hold on;grid on; box on;
-ylabel('Curvature \kappa [1/m]')
+% ylabel('Curvature \kappa [1/m]')
 
-yyaxis right
+% yyaxis right
 plot(p1,pq2((length(pq2)/2)+1:end),'ro','MarkerSize',8,'LineWidth',1.5)
 ylabel('Elongation \epsilon [-]')
-xlabel('Pressure [kPa]','FontSize',12); ylabel('Output','FontSize',12)
-legend('Curvature \kappa [1/m]','Elongation \epsilon [-]','FontSize',12,'Location','southeast')
+xlabel('Pressure [kPa]','FontSize',12); ylabel('Elongation [-]','FontSize',12)
+% legend('Curvature \kappa [1/m]','Elongation \epsilon [-]','FontSize',12,'Location','southeast')

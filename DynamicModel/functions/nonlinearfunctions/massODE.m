@@ -1,4 +1,4 @@
-function [dg, dJt, dM] = massODE(sigma,g,Jt,q,Ba,shape,Nmode,L0,m,w,d,d_sigma)
+function [deta,dg, dJt, dM,dC] = massODE(sigma,g,Jt,eta,q,dq,Ba,shape,Nmode,L0,m,w,d,d_sigma)
 Q = g(1:4);  % first 4 entries express rotation frame in quaternion
 r = g(5:7);  % entries express position vector
 
@@ -29,4 +29,24 @@ dJt = Adg*BaPhi;         % J_tilde only the part inside the integral
 invAdg = adjointGInv(Q(:),r);
 [m_sigma,J1,J2,J3] = inertiaRectangle(m,L0,w,d,d_sigma); 
 Mdiag = diag([J1,J2,J3,m_sigma,m_sigma,m_sigma]);  
-dM = (invAdg*Jt)'*Mdiag*(invAdg*Jt);
+invAdgJt = invAdg*Jt;
+dM = (invAdgJt)'*Mdiag*(invAdgJt);
+
+
+%% eta
+dxi = BaPhi*dq;
+adxi = adjointxi(xi); 
+deta = -adxi*eta + dxi; % n' = -ad_xi eta + dxi;
+
+%% Coreolis matrix
+[adeta] = adjointeta(eta);
+Jtdt = Adg*adeta*BaPhi; 
+dC = (invAdgJt)'*(Mdiag*(invAdg*Jtdt) + Mdiag*adeta*invAdgJt - adeta'*Mdiag*invAdgJt);
+
+
+
+
+
+
+
+% dC
