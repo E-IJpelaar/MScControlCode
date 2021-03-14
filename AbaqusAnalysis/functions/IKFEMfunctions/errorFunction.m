@@ -1,7 +1,9 @@
 function [E]= errorFunction(x,z_ds,y_ds,z_mid_avgs,y_mid_avgs,Nmode,shape,L)
 
 q = x;                                             % set q equal to optimized variable x
-[x_fkin,z_fkin] = funcKinematics(Nmode,shape,q,L); % based on q determine [x-z] based on forward kinematics
+[r,~,~,~] = funcKinematics(q,L,Nmode,shape); % based on q determine [x-z] based on forward kinematics
+x_fkin = r(:,1);
+z_fkin = r(:,3);
 
 % below the coordinates from the forward kinematic model are compared with
 % the data set that is to be fit. Since the forward model gives a well
@@ -43,14 +45,14 @@ arclen_mean = arclength(z_mid_avgs,y_mid_avgs,'s');  % indicated arc-length base
 % a4 = 9;
 % a5 = 9;
 
-a1 = 100000;  
-a2 = 100000;
-a3 = 100000;
+a1 = 1000000;  
+a2 = 1000000;
+a3 = 1000;
 a4 = 50000;
 a5 = 50000;
 
-Q  = [0.01,0 ;
-      0   ,1 ];
+Q  = [0.01   , 0 ;
+      0   ,0.01 ];
   
 
 E = q'*Q*q + sum(a1*(z_mid_avgs - x_q).^2 + a2*(y_mid_avgs-z_q).^2)   + a3*(arclen_mean-arclen).^2+ a4*(z_ds-x_fkin(end)).^2 + a5*(y_ds-z_fkin(end)).^2;

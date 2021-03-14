@@ -4,9 +4,9 @@ K1 = 0;  % curvatures
 K2 = 1;
 K3 = 0;
 
-E1 = 0;  % strains
+E1 = 1;  % strains
 E2 = 0;
-E3 = 1;
+E3 = 0;
 
 K = [K1;K2;K3];
 E = [E1;E2;E3];
@@ -31,9 +31,9 @@ if Nmode*n ~= length(q)                     % throw error when q is not of satis
 end
 
 %% Forward kinematics
-Q0 = rot2quat(eye(3));
+Q0 = rotm2quat(eye(3));
 r0 = zeros(3,1);
-g0 = [Q0;r0];
+g0 = [Q0(:);r0];
 
 [l, g] = ode45(@(l,g) forwardKinematics(l,g,q,Ba,shape,Nmode,L),[0 L],g0); % solve forward kinematics
 
@@ -42,5 +42,5 @@ R = g(:,1:4);       % robot's rotation expressed in quaternions
 x = g(:,5);         % robot's translation x
 y = g(:,6);         % robot's translation y
 z = g(:,7);         % robot's translation z
-R_end = quat2rot(R(end,:));
+R_end = quat2rotm(R(end,:));
 theta = atan2(R_end(1,3),R_end(1,1));

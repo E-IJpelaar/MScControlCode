@@ -6,7 +6,7 @@ clear all;close all; clc; tic;
 
 %% IK settings
 mm2m = 1e-3;
-L = 64.5*mm2m;           % [m] length of the actuator
+L0 = 64.5*mm2m;           % [m] length of the actuator
 Nmode = 1;
 shape = 'cheby';           % type of shape function to be used
 epsilon = 0.001;            % max error norm for IK solution  
@@ -99,16 +99,16 @@ axis equal
 
 %% Optimization
 x_d = [z_ds;y_ds];                                    % scaled end-effector position
-[x0,q0] = InverseKinematics2DOF(x_d,epsilon,Nmode,L); % initial q0 solving IK
+[x0,q0] = InverseKinematics2DOF(x_d,epsilon,Nmode,L0); % initial q0 solving IK
 % q0 = rand(2*Nmode,1);
-fun = @(x)errorFunction(x,z_ds,y_ds,z_mid_avgs,y_mid_avgs,Nmode,shape,L); % write as a function where only x is optimized
+fun = @(x)errorFunction(x,z_ds,y_ds,z_mid_avgs,y_mid_avgs,Nmode,shape,L0); % write as a function where only x is optimized
 % lb = -1*ones(1,2*Nmode);
 % ub = ones(1,2*Nmode);
 [q_opt,~,exitflag] = fmincon(fun,q0);%,[],[],[],[],lb,ub);                 % optimization
 
 % Optimal solution
-[x_opt_f,z_opt_f] = funcKinematics(Nmode,shape,q_opt,L);
-E = errorFunction(q_opt,z_ds,y_ds,z_mid_avgs,y_mid_avgs,Nmode,shape,L);
+[x_opt_f,z_opt_f] = funcKinematicsXZ(q_opt,L0,Nmode,shape);
+E = errorFunction(q_opt,z_ds,y_ds,z_mid_avgs,y_mid_avgs,Nmode,shape,L0);
 toc
 
 

@@ -1,0 +1,1 @@
+Here I used the 6x8 checkerboard pattern. However, due to the fact we have 2 complete white corners. I am going to use 4x6 approximation

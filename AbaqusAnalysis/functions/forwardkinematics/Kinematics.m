@@ -1,12 +1,12 @@
-function [r,R,l,Ba] = Kinematics(q,L,Nmode,shape,L0)     
+function [r,R,l,Ba] = Kinematics(q,Nmode,shape,L0)     
 %% Contrained strain/curvature, 0 = contrained 1 = free
 K1 = 0;  % curvatures
 K2 = 1;
 K3 = 0;
 
-E1 = 0;  % strains
+E1 = 1;  % strains
 E2 = 0;
-E3 = 1;
+E3 = 0;
 
 K = [K1;K2;K3];
 E = [E1;E2;E3];

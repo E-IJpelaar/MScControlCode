@@ -1,4 +1,4 @@
-function [x,z] = funcKinematics(Nmode,shape,q,L)
+function [x,z] = funcKinematicsXZ(Nmode,shape,q,L)
 %% Contrained strain/curvature, 0 = contrained 1 = free
 K1 = 0;  % curvatures
 K2 = 1;

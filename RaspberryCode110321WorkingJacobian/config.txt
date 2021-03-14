@@ -1,0 +1,43 @@
+[options]
+MOTOR_ENABLE = 0
+WRITE_OUTPUT = 1
+PWM_FREQ     = 1500
+PWM_MAX	     = 4999
+HIGHLEVEL    = 10000
+
+[adress]
+PIN_BASE = 300
+PCA9685_ID = 0x60
+MPU6050_ID = 0x68
+MPRLS25_ID = 0x18
+
+[pinout]
+EN_A = 8
+EN_B = 13
+EN_C = 2
+EN_D = 7
+IN1  = 10
+IN2  = 9
+IN3  = 11
+IN4  = 12
+IN5  = 4
+IN6  = 3
+IN7  = 5
+IN8  = 6
+LED  = 13
+
+[imufilter]
+KA = 0.03
+KG = 0.97
+
+[control]
+KP1 = 1.0
+KP2 = 1.0
+KP3 = 1.0
+KP4 = 1.0
+
+[pressurePI]
+Kp = 10
+Ki = 2
+Kd = 0
+
