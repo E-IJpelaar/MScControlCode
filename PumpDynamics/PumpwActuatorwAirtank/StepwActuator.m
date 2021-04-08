@@ -79,7 +79,7 @@ end
         hold on;
 %         title('PWC')
 %         legend('4V',5V )
-        axis([0 25 0 80])
+% %         axis([0 25 0 80])
     end
 % 
 % 

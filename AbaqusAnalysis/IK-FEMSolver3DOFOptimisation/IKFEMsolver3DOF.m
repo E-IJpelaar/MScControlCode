@@ -12,7 +12,7 @@ epsilon = 0.05;            % max error norm for IK solution
 
 %% Get nodal information from FEM simulations
 % all nodes
-filename_allnodes = 'rot60kPa.txt' ;                
+filename_allnodes = '60kPa.txt' ;                
 [all_nodes] = allNodes(filename_allnodes);
 
 % nodes of Interest
@@ -61,17 +61,19 @@ z_d = p_top(2);                       % point on plane
 %% FEM data with plane fit
 
 figure(1)
-plot(z_top,y_top,'ro') 
+plot([-z_top;-z_mid;-z_bot],[y_top;y_mid;y_bot],'ro') 
 hold on;grid on; box on;
-plot(z_mid,y_mid,'ro')
-plot(z_bot,y_bot,'bo')
-plot(p_top(2),p_top(1),'kx','MarkerSize',15,'MarkerFaceColor','r','LineWidth',2)
+
+plot(-p_top(2),p_top(1),'kx','MarkerSize',15,'MarkerFaceColor','k','LineWidth',2)
 hold on;grid on;
-plot(p_bot(2),p_bot(1),'bx','MarkerSize',15,'MarkerFaceColor','b','LineWidth',2)
-quiver(p_top(2),p_top(1),n_top(2)/2,n_top(1)/2,50,'r','linewidth',2)
-quiver(p_bot(2),p_bot(1),n_bot(2)/2,n_bot(1)/2,50,'b','linewidth',2)
-xlabel('z [mm]');ylabel('y [mm]')
-legend('deformed top plate','deformed centre line','undeformed bottom plate','point on plane top','point on plane bottom','normal vector plane','normal vector plane')
+%plot(p_bot(2),p_bot(1),'kx','MarkerSize',15,'MarkerFaceColor','k','LineWidth',2)
+quiver(-p_top(2),p_top(1),-n_top(2)/2,n_top(1)/2,50,'k','linewidth',2)
+quiver(p_bot(2),p_bot(1),n_bot(2)/2,n_bot(1)/2,50,'k','linewidth',2)
+xlabel('x [mm]');ylabel('y [mm]')
+legend('Deforemed actuator','End-effector Location','Normal vector bottom plane','Normal vector top plane')
+axis equal
+% plot(-z_mid,y_mid,'ro')
+% plot(-z_bot,y_bot,'ro')
 
 % scale parameters
 z_ds = z_d/L_act;
@@ -80,62 +82,62 @@ y_mid_avgs = y_mid_avg/L_act;
 z_mid_avgs = z_mid_avg/L_act;
 
 % intermediate plot 
-figure(2)
-plot(z_ds,y_ds,'kx','MarkerSize',15,'LineWidth',1.5)
-hold on; grid on;
-plot(z_mid/L_act,y_mid/L_act,'bo')
-plot(z_mid_avgs,y_mid_avgs,'rx','MarkerSize',15,'LineWidth',1.5)
-xlabel('z [mm]');ylabel('y [mm]')
-legend('end-effector position','middle nodes FEM','cluster mean value')
+% figure(2)
+% plot(z_ds,y_ds,'kx','MarkerSize',15,'LineWidth',1.5)
+% hold on; grid on;
+% plot(z_mid/L_act,y_mid/L_act,'bo')
+% plot(z_mid_avgs,y_mid_avgs,'rx','MarkerSize',15,'LineWidth',1.5)
+% xlabel('z [mm]');ylabel('y [mm]')
+% legend('end-effector position','middle nodes FEM','cluster mean value')
 
-%% Optimization
-if mean(z_ds) < 0 && mean(y_ds) > 0 ||  mean(z_ds) > 0 && mean(y_ds) < 0
-    theta_d = -theta_d;
-end
-x_d = [theta_d; z_ds;y_ds];                                    % scaled end-effector position
-[theta0,x0,q0] = InverseKinematics3DOF(x_d,epsilon,Nmode,L_act);   % initial q0 solving IK
-
-
-fun = @(x)errorFunction3DOF(x,theta_d,z_ds,y_ds,z_mid_avgs,y_mid_avgs,Nmode,shape,L_act); % write as a function where only x is optimized
-[q_opt,~,exitflag] = fmincon(fun,q0);                 % optimization
-
-% Optimal solution
-[theta_opt_f,x_opt_f,z_opt_f] = funcKinematics3DOF(Nmode,shape,q_opt,L_act);
-toc
-
-figure(3)
-plot(z_mid_avg,y_mid_avg,'x','MarkerSize',15,'LineWidth',1.5)
-hold on; grid on; 
-plot(z_d,y_d,'kx','MarkerSize',15,'LineWidth',1.5)
-plot(x_opt_f*L_act,z_opt_f*L_act,'LineWidth',1)
-plot(x0(:,1)*L_act,x0(:,2)*L_act,'LineWidth',1)
-legend('mean of the mid nodes','end-effector','optimized IK solution','IK solution (q0)')
-xlabel('z [mm]');ylabel('y [mm]')
-
-
-
-
-%% Only USE this for a 3D plot, not necessary
-% Bottom plane is assumed to be a plane at 
-
-% [n_bot,V,p_bot] = affine_fit(bot_def);
-% [n_top,V,p_top] = affine_fit(top_def);
-
-
+% %% Optimization
+% if mean(z_ds) < 0 && mean(y_ds) > 0 ||  mean(z_ds) > 0 && mean(y_ds) < 0
+%     theta_d = -theta_d;
+% end
+% x_d = [theta_d; z_ds;y_ds];                                    % scaled end-effector position
+% [theta0,x0,q0] = InverseKinematics3DOF(x_d,epsilon,Nmode,L_act);   % initial q0 solving IK
+% 
+% 
+% fun = @(x)errorFunction3DOF(x,theta_d,z_ds,y_ds,z_mid_avgs,y_mid_avgs,Nmode,shape,L_act); % write as a function where only x is optimized
+% [q_opt,~,exitflag] = fmincon(fun,q0);                 % optimization
+% 
+% % Optimal solution
+% [theta_opt_f,x_opt_f,z_opt_f] = funcKinematics3DOF(Nmode,shape,q_opt,L_act);
+% toc
+% 
 % figure(3)
-% plot3(p_top(1),p_top(2),p_top(3),'bo','MarkerSize',10,'MarkerFaceColor','b')
-% hold on;grid on;
-% plot3(p_bot(1),p_bot(2),p_bot(3),'ro','MarkerSize',10,'MarkerFaceColor','r')
-% quiver3(p_top(1),p_top(2),p_top(3),n_top(1)/3,n_top(2)/3,n_top(3)/3,100,'b','linewidth',2)
-% quiver3(p_bot(1),p_bot(2),p_bot(3),n_bot(1)/3,n_bot(2)/3,n_bot(3)/3,100,'r','linewidth',2)
-% plot3(x_top,y_top,z_top,'bo') 
-% plot3(x_mid,y_mid,z_mid,'ro')
-% plot3(x_bot,y_bot,z_bot,'bo')
-% xlabel('x [mm]');ylabel('y [mm]');zlabel('z [mm]');
-
-
-
-
-
-
+% plot(z_mid_avg,y_mid_avg,'x','MarkerSize',15,'LineWidth',1.5)
+% hold on; grid on; 
+% plot(z_d,y_d,'kx','MarkerSize',15,'LineWidth',1.5)
+% plot(x_opt_f*L_act,z_opt_f*L_act,'LineWidth',1)
+% plot(x0(:,1)*L_act,x0(:,2)*L_act,'LineWidth',1)
+% legend('mean of the mid nodes','end-effector','optimized IK solution','IK solution (q0)')
+% xlabel('z [mm]');ylabel('y [mm]')
+% 
+% 
+% 
+% 
+% %% Only USE this for a 3D plot, not necessary
+% % Bottom plane is assumed to be a plane at 
+% 
+% % [n_bot,V,p_bot] = affine_fit(bot_def);
+% % [n_top,V,p_top] = affine_fit(top_def);
+% 
+% 
+% % figure(3)
+% % plot3(p_top(1),p_top(2),p_top(3),'bo','MarkerSize',10,'MarkerFaceColor','b')
+% % hold on;grid on;
+% % plot3(p_bot(1),p_bot(2),p_bot(3),'ro','MarkerSize',10,'MarkerFaceColor','r')
+% % quiver3(p_top(1),p_top(2),p_top(3),n_top(1)/3,n_top(2)/3,n_top(3)/3,100,'b','linewidth',2)
+% % quiver3(p_bot(1),p_bot(2),p_bot(3),n_bot(1)/3,n_bot(2)/3,n_bot(3)/3,100,'r','linewidth',2)
+% % plot3(x_top,y_top,z_top,'bo') 
+% % plot3(x_mid,y_mid,z_mid,'ro')
+% % plot3(x_bot,y_bot,z_bot,'bo')
+% % xlabel('x [mm]');ylabel('y [mm]');zlabel('z [mm]');
+% 
+% 
+% 
+% 
+% 
+% 
 

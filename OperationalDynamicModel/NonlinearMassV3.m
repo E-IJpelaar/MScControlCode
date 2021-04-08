@@ -16,8 +16,9 @@ d  = 0.025;             % [m] depth of the actuator
 
 % Damping matrix             
 D_k = 4e-5;               % [Nsm]Linear damping on bending (order E-5)
-D_e = 0.9;                % [Ns/m]Linear damping on elongation (order E-3)
+D_e = 0.3;                % [Ns/m]Linear damping on elongation (order E-3)
 D   = diag([D_k,D_e]);    % Damping matrix
+
 
 %% Reference
 % r_ref = [0 ;L0];

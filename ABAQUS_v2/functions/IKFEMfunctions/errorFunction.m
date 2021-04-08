@@ -43,16 +43,16 @@ arclen_mean = arclength(z_mid_avgs,y_mid_avgs,'s');  % indicated arc-length base
 % a4 = 9;
 % a5 = 9;
 
-a1 = 100000;  
-a2 = 100000;
-a3 = 100000;
-a4 = 50000;
-a5 = 50000;
+a1 = 50000;  
+a2 = 50000;
+a3 = 50000;
+a4 = 10000;
+a5 = 10000;
 
-Q  = [0.01,0 ;
-      0   ,1 ];
+Q  = [0.001   ,0 ;
+      0   ,0.001 ];
   
 
-E = q'*Q*q + sum(a1*(z_mid_avgs - x_q).^2 + a2*(y_mid_avgs-z_q).^2)   + a3*(arclen_mean-arclen).^2+ a4*(z_ds-x_fkin(end)).^2 + a5*(y_ds-z_fkin(end)).^2;
+E = q'*Q*q + sum(a1*(z_mid_avgs - x_q).^2 + a2*(y_mid_avgs-z_q).^2) + a3*(arclen_mean-arclen).^2+ a4*(z_ds-x_fkin(end)).^2 + a5*(y_ds-z_fkin(end)).^2;
 
 

@@ -12,18 +12,18 @@ epsilon = 0.05;            % max error norm for IK solution
 mm2m  = 1e-3;
 %% Get nodal information from FEM simulations
 % all nodes
-filename_allnodes = 'rot60kPa.txt' ;                
+filename_allnodes = 'rot40kPa.txt' ;                
 [all_nodes] = allNodes(filename_allnodes);
 
 % nodes of Interest
 % bottom nodes
-filename_nodes = 'BottomNodes60kMesh.txt'; 
+filename_nodes = 'BottomNodes40kMesh.txt'; 
 [bot_nodes] = NodesOfInterest(filename_nodes);
 % centre line nodes
-filename_nodes = 'MiddleNodes60kMesh.txt'; 
+filename_nodes = 'MiddleNodes40kMesh.txt'; 
 [mid_nodes] = NodesOfInterest(filename_nodes); 
 % top nodes (for orientation)
-filename_nodes = 'TopNodes60kMeshtest.txt'; 
+filename_nodes = 'TopNodes40kMeshtest.txt'; 
 [top_nodes] = NodesOfInterest(filename_nodes);
 
 

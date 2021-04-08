@@ -32,12 +32,15 @@ legend('FEA with input mapping','Hyper-elastic stiffness model fit','FontSize',1
 
 
 figure(2)
+yyaxis left
 plot(p1,-pq1,'bx','MarkerSize',8,'LineWidth',1.5) % only half is simulated, the rest is assumed
 hold on;grid on; box on;
-plot(p1,pq2((length(pq2)/2)+1:end),'ro','MarkerSize',8,'LineWidth',1.5)
-xlabel('Pressure [kPa]','FontSize',12); ylabel('Output','FontSize',12)
-legend('Curvature \kappa [1/m]','Elongation \epsilon [-]','FontSize',12,'Location','southeast')
+ylabel('Curvature [1/m]','FontSize',12)
 
+yyaxis right
+plot(p1,pq2((length(pq2)/2)+1:end),'ro','MarkerSize',8,'LineWidth',1.5)
+xlabel('Pressure [kPa]','FontSize',12); ylabel('Elongation [-]','FontSize',12)
+legend('Curvature \kappa [1/m]','Elongation \epsilon [-]','FontSize',12,'Location','southeast')
 
 figure(3)
 % yyaxis left

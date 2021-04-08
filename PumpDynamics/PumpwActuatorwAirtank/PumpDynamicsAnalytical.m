@@ -33,30 +33,32 @@ for ii = 1:length(Vsteps)
         t = t(idx); 
         dp =dp(idx);
         v = v(idx);
-        [ d, ix ] = min( abs( dp-(0.63*dp(end)) ) );
+        [ d, ix ] = min(abs( dp-(0.632*dp(end)) ) );
         tau_approx(ii) =t0(ix);
         K_approx(ii) = mean(dp(end-500:end))/v(end); % mean pressure last 5 seconds
         
              
         figure(2)
-        plot(t0,dp)       
+        plot(t0,dp,'LineWidth',1)       
         hold on;grid on;
-        xlabel('Time [s]');ylabel('Pressure Difference [kPa]')
-        title('Step w/ airtank & actuator')
+        xlabel('Time [s]');ylabel('Pressure [kPa]')
+        %title('Step w/ airtank & actuator')
 
 end
 
+figure(2)
+% legend('2V','3V','4V','5V','6V','7V','8V','9V','10V','11V','12V','Orientation','horizontal','NumColumns',6,'Location','south')
 
 
 figure(3)
-plot(Vsteps,tau_approx,'ro')
+plot(Vsteps,tau_approx,'bx','MarkerSize',14,'LineWidth',2)
 hold on;grid on;
-xlabel('Volt [V]');ylabel('Approximate Rise time \tau [1/s]')
+xlabel('Volt [V]');ylabel('Time constant \tau [1/s]')
 
 figure(4)
-plot(Vsteps,K_approx,'bx')
+plot(Vsteps,K_approx,'bx','MarkerSize',14,'LineWidth',2)
 hold on;grid on;
-xlabel('Volt [V]');ylabel('Approximate K [kPa/V]')
+xlabel('Volt [V]');ylabel('Constant K [kPa/V]')
 
 
 % first find best PWC solution for K
@@ -80,23 +82,26 @@ end
 
 % plot solution for K
 figure(4)
-plot(Vsteps,K_fit)
+% plot(Vsteps,K_fit)
 hold on;grid on;
-plot(Vsteps,polyval(K_poly,Vsteps))
+plot(linspace(2,12,1000),polyval(K_poly,linspace(2,12,1000)),'r','LineWidth',1.5)
+legend('Experimental estimate','4^{th}-order polynomial fit','FontSize',12)
+text(4.5,2.2,['K(V) = ',num2str(K_poly(1),2),'V^4 + ',num2str(K_poly(2),2),'V^3 + ',num2str(K_poly(3),2),'V^2 + ',num2str(K_poly(4),2),'V + ',num2str(K_poly(5),2)])
 
 
 %% Optimization tau analytical
-Vtau = [4:9]; % Volts used to estimate parameter tau
-tau_approx = tau_approx(3:end-3);
+Vtau = [4:12]; % Volts used to estimate parameter tau
+tau_approx = tau_approx(3:end);
 
 P = polyfit(Vtau,tau_approx,1);
-tau_fit = polyval(P,Vtau);
+tau_fit = polyval(P,linspace(2,12,1000));
 
-figure(5)
-plot(Vtau,tau_approx);
+figure(3)
+% plot(Vtau,tau_approx);
 hold on; grid on;
-plot(Vtau,tau_fit)
-
+plot(linspace(2,12,1000),tau_fit,'r','LineWidth',1.5)
+text(8.2,3.5,['\tau(V) = ',num2str(P(1),2),'V + ',num2str(P(2),2)])
+legend('Experimental estimate','1^{st}-order linear fit','FontSize',12)
 
 mu = P(1);
 nu = P(2);
@@ -125,16 +130,17 @@ function dxdt = pressureODEPWC(t,x,mu,nu,alpha,beta,V,dV,Vmax,K_poly)
 tau = mu*V + nu;
 
 % PWC
-if V <= dV
-    K = 0;
-elseif dV < V &&  V <= Vmax 
-    K = alpha*V + beta;
-elseif V > Vmax
-    K = alpha*Vmax +beta;
-end
+% if V <= dV
+%     K = 0;
+% elseif dV < V &&  V <= Vmax 
+%     K = alpha*V + beta;
+% elseif V > Vmax
+%     K = alpha*Vmax +beta;
+% end
 
 % Fourth order fit
-% K = polyval(K_poly,V);
+K = polyval(K_poly,V);
+
 
 dxdt = (-1/tau) * x + (K/tau) * V;
 

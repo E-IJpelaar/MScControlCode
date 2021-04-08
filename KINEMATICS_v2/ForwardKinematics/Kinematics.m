@@ -1,19 +1,20 @@
-clear all;close all;clc;tic
+% clear all;close all;clc;tic
 %% Parameters
 shape = "legendre";   % poly = polynomial, cheby = chebyshev, legendre = legendre
 Nmode = 1;            % # shape functions to approximate strain/curvature
 
 L0 = 64.5e-3;         % undeformed length of actuator
-q = [-17;0.1];         % q(t) = q(0) kappa;epsilon
+
+q = [8;0.3];         % q(t) = q(0) kappa;epsilon
 
 %% Contrained strain/curvature, 0 = contrained 1 = free
 K1 = 0;  % curvatures
 K2 = 1;
 K3 = 0;
 
-E1 = 1;  % strains
+E1 = 0;  % strains
 E2 = 0;
-E3 = 0;
+E3 = 1;
 
 K = [K1;K2;K3];
 E = [E1;E2;E3];
@@ -56,17 +57,22 @@ toc
 %% Figures
 
 figure(1)
-subplot(1,2,1)
-plot3(x,y,-z)
-xlabel('x'); ylabel('y');zlabel('z')
-grid on; box on;
-subplot(1,2,2)
-hold on
-plot(z,x,'LineWidth',2)
-grid on;box on
-xlabel('y [-]','FontSize',14);ylabel('z [-]','FontSize',14)
-% axis([0 0.15 0 1.2])
-axis equal
+% subplot(1,2,1)
+% plot3(x,y,-z)
+% xlabel('x'); ylabel('y');zlabel('z')
+% grid on; box on;
+% subplot(1,2,2)
+% hold on
+m2mm = 1e3;
+plot(x*m2mm,z*m2mm,'r','LineWidth',2)
+grid on;box on;hold on;
+% plot(x(end)*m2mm,z(end)*m2mm,'rx','LineWidth',2,'MarkerSize',16)
+xlabel('x position [mm]','FontSize',12);ylabel('y position [mm]','FontSize',12)
+% axis([0 40 0 55]) 
+% legend('Kinematic configuration for q = [\kappa,\epsilon]^T = [17,0.1]^T')
+axis equal; 
+% axis tight;
+
 
 toc
 

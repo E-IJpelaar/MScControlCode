@@ -6,17 +6,17 @@ clear all;close all; clc; tic;
 
 %% IK settings
 mm2m = 1e-3;
-L0 = 64.5*mm2m;           % [m] length of the actuator
+L0 = 0.0645;           % [m] length of the actuator
 Nmode = 1;
 shape = 'cheby';           % type of shape function to be used
-epsilon = 0.01;            % max error norm for IK solution  
+epsilon = 0.0025;            % max error norm for IK solution  
 
 % data_location = 'C:\Users\s159261\OneDrive - TU Eindhoven\Documents\GitHub\MScControlCode\AbaqusAnalysis\Rot&ElongStiffness\ForceData';
 % data_location = 'C:\Users\s159261\OneDrive - TU Eindhoven\Documents\GitHub\MScControlCode\AbaqusAnalysis\Rot&ElongStiffness\ElongData'; % select folder in which the data is stored
 data_location = 'C:\Users\s159261\OneDrive - TU Eindhoven\Documents\GitHub\MScControlCode\ABAQUS_v2\DataFiles\RotationAnalysis';
 %% Get nodal information from FEM simulations
          
-current_file = 'rot50kPa.txt';
+current_file = '60kPa.txt';
 
 % all nodes
 filename_allnodes = current_file ;                
@@ -123,4 +123,14 @@ plot(x_opt_f,z_opt_f,'LineWidth',1)
 plot(x0(:,1),x0(:,2),'LineWidth',1)
 legend('mean of the mid nodes','end-effector','optimized IK solution','IK solution (q0)')
 xlabel('z [mm]');ylabel('y [mm]')
+axis equal
+
+figure(4)
+plot(-z_mid_avg,y_mid_avg,'bx','MarkerSize',15,'LineWidth',1.5)
+hold on; grid on; 
+plot(-z_d,y_d,'kx','MarkerSize',15,'LineWidth',1.5)
+plot(-x_opt_f*1000,z_opt_f*1000,'r','LineWidth',1)
+plot(-x0(:,1)*1000,x0(:,2)*1000,'k','LineWidth',1)
+legend('Backbone nodes','End-effector','Optimized IK solution','IK solution','FontSize',12)
+xlabel('x [mm]','FontSize',12);ylabel('y [mm]','FontSize',12)
 axis equal

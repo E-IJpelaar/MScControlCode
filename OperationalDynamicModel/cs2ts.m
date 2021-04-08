@@ -21,7 +21,7 @@ e_y = r_opt(3)-y_set;
 % then x
 a1 = 1;  % e theta
 a2 = 1;  % e x
-a3 = 10;% e y
+a3 = 1;% e y
 
 Eq = norm(a1*e_theta + a2*e_x + a3*e_y);
 

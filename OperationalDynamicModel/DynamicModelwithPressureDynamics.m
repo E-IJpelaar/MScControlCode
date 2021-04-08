@@ -1,12 +1,27 @@
 clear;close all;clc;tic
-load mapping.mat;
-H = flip(H);
-global tau_error_sum  p_error_sum;
+
+H = [0.0018 , -0.0018;
+     0.1453 ,  0.1453];
+ 
+dt = 1e-3;
+t_end = 20;
+ 
+global tau_error_sum  p_error_sum U1 U2 time pset1 pset2 tau1 tau2;
 tau_error_sum = zeros(2,1);
 p_error_sum = zeros(2,1);
+U1 = zeros(1,length(0:dt:t_end)+1);
+U2 = zeros(1,length(0:dt:t_end)+1);
+
+pset1 = zeros(1,length(0:dt:t_end)+1);
+pset2 = zeros(1,length(0:dt:t_end)+1);
+
+tau1 = zeros(1,length(0:dt:t_end)+1);
+tau2 = zeros(1,length(0:dt:t_end)+1);
+
+time = zeros(1,length(0:dt:t_end)+1);
 %% Parameters
 Nmode = 1;
-space_step = 11;
+space_step = 15;
 shape = 'cheby';
 %% Parameters
 % geometric properties
@@ -16,21 +31,31 @@ w  = 0.054;             % [m] width of actuator
 d  = 0.025;             % [m] depth of the actuator
 
 % Damping matrix             
-D_k = 6e-5;               % [Nsm]Linear damping on bending (order E-5)
-D_e = 0.9;                  % [Ns/m]Linear damping on elongation (order E-3)
+D_k = 4e-5;               % [Nsm]Linear damping on bending (order E-5)
+D_e = 0.3;                % [Ns/m]Linear damping on elongation (order E-3)
 D   = diag([D_k,D_e]);    % Damping matrix
 
 %% Reference
 % set refernce
-
-% r_ref = [0.014;L0+0.0155]; % [x;y]
-r_ref3 = ts2cs3(9,0.4,L0)
+r_ref3 = ts2cs3(8,0.3,L0);
 r_ref = [r_ref3(2);r_ref3(3)];
+
+% Kp = diag([525,525]);
+% Ki = diag([475,350]);
+
+Kp = diag([570,570]);
+Ki = diag([250,150]);
+
+
+
+Kpp = diag([1,1]);
+Kip = diag([0,0]);
+
 
 %% Initial conditions 
 % initial conditions 
 rot0 = 0;                         % [deg]  initial rotation
-e0   = 0.1;                          % [-]    initial elongation
+e0   = 0;                          % [-]    initial elongation
 k0   = deg2rad(rot0)/(L0*(1+e0));  % [1/m] initial curvature
 q0   = [k0 e0];
 
@@ -45,10 +70,9 @@ p20 = 0;
 p0 = [p10 p20];
 
 % solve SS-model
-dt = 1e-3;
-T = 0:dt:10;
+T = 0:dt:t_end;
 x0 = [q0 dq0 p0];                       % initial condition vector
-[t,x] = ode23(@(t,x) nonLinearDynamicModelPressureModel(t,x,D,H,L0,m,w,d,Nmode,shape,space_step,r_ref,dt),T,x0);
+[t,x] = ode23(@(t,x) nonLinearDynamicModelPressureModel(t,x,D,H,L0,m,w,d,Nmode,shape,space_step,r_ref,dt,Kp,Ki,Kpp,Kip),T,x0);
 
 %% Data extraction
 
@@ -85,32 +109,34 @@ dk = x(:,3); % curvature rate
 de = x(:,4); % elongation rate
 
 
-%% Figure
+%% Modal coordinates
 % figure(1)
 % yyaxis left
 % plot(t,e,'LineWidth',1.5)
 % ylabel('\epsilon [-]')
 % hold on;grid on;
 % plot(t,(r_ref(2)/L0)-1*ones(length(e),1))
-
-
+% 
 % yyaxis right
 % plot(t,k,'LineWidth',1.5)
 % xlabel('Time [s]');ylabel('\kappa [1/m]')
 % legend('\epsilon [-]','\kappa [1/m]')
-% 
-figure(2)
-yyaxis left
-plot(t,de,'LineWidth',1.5)
-ylabel('$\dot{\epsilon}$ [1/s]','Interpreter','Latex')
-hold on;grid on;
 
-yyaxis right
-plot(t,dk,'LineWidth',1.5)
-xlabel('Time [s]');ylabel('$\dot{\kappa}$ [1/ms]','Interpreter','Latex')
-legend('$\dot{\epsilon}$ [1/s]','$\dot{\kappa}$ [1/ms]','Interpreter','Latex')
+%% Modal coordinate velocity
+
+% figure(2)
+% yyaxis left
+% plot(t,de,'LineWidth',1.5)
+% ylabel('$\dot{\epsilon}$ [1/s]','Interpreter','Latex')
+% hold on;grid on;
+% 
+% yyaxis right
+% plot(t,dk,'LineWidth',1.5)
+% xlabel('Time [s]');ylabel('$\dot{\kappa}$ [1/ms]','Interpreter','Latex')
+% legend('$\dot{\epsilon}$ [1/s]','$\dot{\kappa}$ [1/ms]','Interpreter','Latex')
 % % 
-% %  
+
+%% Actuator length and rotation
 % figure(3)
 % yyaxis left
 % plot(t,L,'LineWidth',1.5)
@@ -118,7 +144,6 @@ legend('$\dot{\epsilon}$ [1/s]','$\dot{\kappa}$ [1/ms]','Interpreter','Latex')
 % ylabel('Actuator length [m]')
 % ylim([0 0.12])
 % plot(t,(r_ref(2))*ones(length(L),1))
-% 
 % 
 % 
 % yyaxis right
@@ -129,14 +154,77 @@ legend('$\dot{\epsilon}$ [1/s]','$\dot{\kappa}$ [1/ms]','Interpreter','Latex')
 % % legend('With Coriolis & Gravity','Without Coriolis & Gravity')
 
 
+%% Error
+% figure(14)
+% plot(t,r_ref(1)-x_pos,'r','LineWidth',1.5)
+% hold on; grid on;
+% plot(t,r_ref(2)-y_pos,'b','LineWidth',1.5)
+% xlabel('Time [s]');ylabel('Position error [m]')
 
-figure(14)
-plot(t,r_ref(1)-x_pos,'r','LineWidth',1.5)
-hold on; grid on;
+idx = find(U1 ~= 0);
+timeU1 = t(idx);
+U1p = U1(idx);
+
+idx = find(U2 ~= 0);
+timeU2 = t(idx);
+U2p = U2(idx);
+
+idx = find(pset1 ~= 0);
+timepset1 = t(idx);
+pset1p = pset1(idx);
+
+idx = find(pset2 ~= 0);
+timepset2 = t(idx);
+pset2p = pset2(idx);
+
+idx = find(tau1 ~= 0);
+timetau1 = t(idx);
+tau1p = tau1(idx);
+
+idx = find(tau2 ~= 0);
+timetau2 = t(idx);
+tau2p = tau2(idx);
+
+
+figure(1)
+subplot(3,1,1)
+plot(t,r_ref(1)-x_pos,'b','LineWidth',1.5)
+hold on;grid on;
+yline(0,'r--')
+ylabel('Error x position [m]')
+
+subplot(3,1,2)
 plot(t,r_ref(2)-y_pos,'b','LineWidth',1.5)
-xlabel('Time [s]');ylabel('Position error [m]')
+hold on;grid on;
+yline(0,'r--')
+ylabel('Error y position [m]')
 
-error = r_ref-[x_pos(end);y_pos(end)]
+subplot(3,1,3)
+plot(timeU1,U1p,'r','LineWidth',1.5)
+hold on; grid on;
+plot(timeU2,U2p,'b','LineWidth',1.5)
+xlabel('Time [s]');ylabel('Control Input [V]')
+legend('V_1','V_2')
+
+
+figure(2)
+plot(timepset1,pset1p,'r')
+hold on; grid on;
+plot(timepset2,pset2p,'b')
+plot(t,x(:,5),'r','LineWidth',1.5)
+plot(t,x(:,6),'b','LineWidth',1.5)
+xlabel('Time [s]');ylabel('Pressure [kPa]')
+legend('p_{ref1}','p_{ref2}','p_1','p_2')
+
+figure(3)
+yyaxis left
+plot(timetau1,tau1p,'b','LineWidth',1.5)
+hold on; grid on;
+ylabel('Input Moment')
+
+yyaxis right
+plot(timetau2,tau2p,'r','LineWidth',1.5)
+xlabel('Time [s]');ylabel('Input Force')
 
 
 toc

@@ -1,6 +1,6 @@
 function [xi] = strainField(l,q,Ba,shape,Nmode,L0)
 %% Initial undeformed shape
-xi0 = [0;0;0;1;0;0];
+xi0 = [0;0;0;0;0;1];
 %% Calculate strains and curvatures with shape functions
 [~,m] = size(Ba);        % amount of active strains
 phi_q = zeros(m,1);      % shape function vector (phi*q)

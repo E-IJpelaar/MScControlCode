@@ -1,18 +1,26 @@
 function dxdt = nonLinearDynamicModel(t,x,D,H,L0,m,w,d,Nmode,shape,space_step)
 
-e = x(1);
-k = x(2);                  % current actuator length
+k = x(1); 
+e = x(2);
+                 % current actuator length
 
 % Determine non-linear mass matrix
-[M]  = massMatrix(e,k,L0,m,w,d,Nmode,shape,space_step)
+[M]  = massMatrix(e,k,L0,m,w,d,Nmode,shape,space_step);
 invM = inv(M);
 
 
 
 % Calculate stiffness at instant x
-Ke = elongStiffness(e);
 Kk = bendStiffness(k);
-K = diag([Ke,Kk]);        % Stiffness matrix
+Ke = elongStiffness(e);
+figure(40)
+plot(t,Kk,'ro')
+hold on; grid on;
+figure(41)
+plot(t,Ke,'bx')
+hold on; grid on;
+
+K = diag([Kk,Ke]);        % Stiffness matrix
 
 % Non-linear state-space
 O2 = zeros(2,2);

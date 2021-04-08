@@ -63,7 +63,7 @@ ylabel('Curvature \kappa [1/m]')
 yyaxis right
 plot(p1,pq2,'ro','MarkerSize',8,'LineWidth',1.5)
 ylabel('Elongation \epsilon [-]')
-xlabel('Pressure [kPa]','FontSize',12); ylabel('Output','FontSize',12)
+xlabel('Pressure [kPa]','FontSize',12); ylabel('Elongation [-]','FontSize',12)
 legend('Curvature \kappa [1/m]','Elongation \epsilon [-]','FontSize',12,'Location','southeast')
 
 % figure(5)

@@ -4,7 +4,7 @@ shape = "cheby";             % poly = polynomial, cheby = chebyshev, legendre = 
 rho = 1e-1;
 %% IK parameters
 q0 = zeros(2*Nmode,1);     % initial guess
-it_max = 10000;             % maximum amount of iterations
+it_max = 1000;             % maximum amount of iterations
 it = 0;                    % set iterations to zero
 alpha = 50;                % learning gain
 w = kron(eye(2),diag([ones(1,Nmode)])); % each q is equally important for diag(1)
