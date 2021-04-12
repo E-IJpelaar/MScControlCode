@@ -40,12 +40,10 @@ D   = diag([D_k,D_e]);    % Damping matrix
 r_ref3 = ts2cs3(8,0.3,L0);
 r_ref = [r_ref3(2);r_ref3(3)];
 
-% Kp = diag([525,525]);
-% Ki = diag([475,350]);
+Kp = diag([5000,5000]); % current best tuning
+Ki = diag([1500,3500]);
 
-Kp = diag([570,570]);
-Ki = diag([250,150]);
-
+% effects lower I, higher I, Kp write down for report.
 
 
 Kpp = diag([1,1]);
@@ -85,7 +83,7 @@ y_pos(ii) = r_pos(2);
 end
 
 
-figure(10)
+figure(100)
 plot(t,x_pos,'LineWidth',1.5)
 hold on;grid on;
 plot(t,r_ref(1)*ones(1,length(x_pos)),'r-','LineWidth', 1.5)
@@ -93,7 +91,7 @@ xlabel('Time [s]');ylabel('Position [m]')
 legend('x - position','Reference','FontSize',12)
 
 
-figure(11)
+% figure(11)
 plot(t,y_pos,'LineWidth',1.5)
 hold on;grid on;
 plot(t,r_ref(2)*ones(1,length(y_pos)),'r-','LineWidth', 1.5)

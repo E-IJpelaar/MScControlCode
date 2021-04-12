@@ -1,4 +1,4 @@
-function dxdt = nonLinearDynamicModelPressureModel(t,x,D,H,L0,m,w,d,Nmode,shape,space_step,r_ref,dt,Kp,Ki,Kpp,Kip)
+function dxdt = nonLinearDynamicModelPressureModel(t,x,D,H,L0,m,w,d,Nmode,shape,space_step,r_ref,dt,Kp,Ki,Kd)
 global tau_error_sum p_error_sum U1 U2 time pset1 pset2 tau1 tau2;
 k = x(1);                  
 e = x(2);
@@ -35,15 +35,14 @@ r = ts2cs(k,e,L0);   % [kappa;epsilon]==>[theta(degrees); x;y]
 
 error = r_ref-r;
 tau_error_sum = tau_error_sum + error*dt;
-derror = zeros(2,1) - Jc*q;
+derror = [0;0] - Jc*q;
 
 
 % Kd = diag([0,0]);
 
 Kpt = Kp*error;
 Kit = Ki*tau_error_sum;
-% Kdt = Kd*derror;
-
+Kdt = Kd*derror;
 
 
 k_set = 10;
@@ -54,26 +53,24 @@ Ke_set = elongStiffness(e_set);
 K_set = diag([Kk_set,Ke_set]); 
 
 
-tau = Jc'*(Kpt + Kit);% + Kdt);% + K_set*[q_set];%  + Kdt);
+tau = Jc'*(Kpt + Kit + Kdt);% + K_set*[q_set];%  + Kdt);
 
 
-% V = [27,9/4;-27,9/4]*tau
+V = [27,2.5;-27,2.5]*tau;
 % %% Pressure controller
 p_set = inv(H)*tau;
 
-p_error = p_set - p;
-p_error_sum = p_error_sum + p_error*dt;
-% 
-% 
-% 
-Pp = Kpp*p_error;
-Ip = Kip*p_error_sum;
+% p_error = p_set - p
+% p_error_sum = p_error_sum + p_error*dt;
 
 
-% V = [0.75,0;0,0.75]*p_set;
+
+% Pp = Kpp*p_error;
+% Ip = Kip*p_error_sum;
+
 
 % Pressure input Volt
-V = Pp + Ip;
+% V = Pp + Ip;
 
 % saturate between 0 12V input
 

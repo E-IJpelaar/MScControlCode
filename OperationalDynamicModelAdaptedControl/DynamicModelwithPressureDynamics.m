@@ -37,11 +37,12 @@ D   = diag([D_k,D_e]);    % Damping matrix
 
 %% Reference
 % set refernce
-r_ref3 = ts2cs3(0,0.3,L0);
+r_ref3 = ts2cs3(8,0.3,L0);
 r_ref = [r_ref3(2);r_ref3(3)];
 
-Kp = diag([0,1500]);
-Ki = diag([0,175]);
+Kp = diag([1500,1500]);
+Ki = diag([150,150]);
+Kd = diag([150,150]);
 
 Kpp = diag([1,1]);
 Kip = diag([0,0]);
@@ -67,7 +68,7 @@ p0 = [p10 p20];
 % solve SS-model
 T = 0:dt:t_end;
 x0 = [q0 dq0 p0];                       % initial condition vector
-[t,x] = ode23(@(t,x) nonLinearDynamicModelPressureModel(t,x,D,H,L0,m,w,d,Nmode,shape,space_step,r_ref,dt,Kp,Ki,Kpp,Kip),T,x0);
+[t,x] = ode23(@(t,x) nonLinearDynamicModelPressureModel(t,x,D,H,L0,m,w,d,Nmode,shape,space_step,r_ref,dt,Kp,Ki,Kd),T,x0);
 
 %% Data extraction
 
