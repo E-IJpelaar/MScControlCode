@@ -22,10 +22,10 @@ for ii = 1:length(Vsteps)
         v = u./341.3333;
         
 %         figure(1)
-%         plot(t,dp,'LineWidth',1)
-%         hold on; grid on;
-%         xlabel('Time [s]');ylabel('Pressure Difference [kPa]')  
-%         title('Step w/ airtank & actuator')
+        plot(t,dp,'LineWidth',1)
+        hold on; grid on;
+        xlabel('Time [s]');ylabel('Pressure Difference [kPa]')  
+        title('Step w/ airtank & actuator')
         
         % analyse step input
       

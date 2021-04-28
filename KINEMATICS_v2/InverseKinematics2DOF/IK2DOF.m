@@ -1,11 +1,11 @@
 clear all;close all;clc;tic;
 %% Initial conditions
-Nmode = 1;                  % # shape functions to approximate strain/curvature
+Nmode = 3;                  % # shape functions to approximate strain/curvature
 shape = "cheby";            % poly = polynomial, cheby = chebyshev, legendre = legendre
 L0     = 0.0645;                  % undeformed length of actuator
 rho = 1e-1;
 %% IK parameters
-x_d = [0;0.097];            % desired end-effector position (x,z) 
+x_d = [0.046;0.097];            % desired end-effector position (x,z) 
 epsilon = 0.0001;            % max error norm
 q0 = zeros(2*Nmode,1);     % initial guess
 it_max = 1000;             % maximum amount of iterations

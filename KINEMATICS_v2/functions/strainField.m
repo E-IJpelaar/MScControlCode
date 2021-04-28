@@ -48,5 +48,5 @@ end
 
 %% Determine strain and curvature vector and matrix
 xi = Ba*phi_q + xi0;    % determine xi vector
-xi(1:3) = xi(1:3)*norm(xi(4:6));  % account for curvature due to elongation
+xi(1:3) = xi(1:3)*norm(xi(4:6))  % account for curvature due to elongation
 

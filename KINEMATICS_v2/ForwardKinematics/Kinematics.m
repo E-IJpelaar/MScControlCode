@@ -1,11 +1,11 @@
-% clear all;close all;clc;tic
+clear all;close all;clc;tic
 %% Parameters
 shape = "legendre";   % poly = polynomial, cheby = chebyshev, legendre = legendre
-Nmode = 1;            % # shape functions to approximate strain/curvature
+Nmode = 3;            % # shape functions to approximate strain/curvature
 
 L0 = 64.5e-3;         % undeformed length of actuator
 
-q = [8;0.3];         % q(t) = q(0) kappa;epsilon
+q = [3;-40;50;0.1;-0.5;0.8];         % q(t) = q(0) kappa;epsilon
 
 %% Contrained strain/curvature, 0 = contrained 1 = free
 K1 = 0;  % curvatures
