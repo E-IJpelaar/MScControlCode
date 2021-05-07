@@ -12,7 +12,5 @@ else
     
 end
 
-theta_deg = rad2deg(theta);
 
 r = [x;y];
-% r = [theta_deg;x;y];

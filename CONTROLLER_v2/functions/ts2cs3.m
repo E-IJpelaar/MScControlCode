@@ -1,4 +1,4 @@
-function r = ts2cs(k,e,L0)
+function r = ts2cs3(k,e,L0)
 
 theta = L0*(1+e)*k;
 
@@ -14,5 +14,5 @@ end
 
 theta_deg = rad2deg(theta);
 
-r = [x;y];
-% r = [theta_deg;x;y];
+
+r = [theta_deg;x;y];

@@ -1,9 +1,9 @@
 clear all;close all;clc;
 %% load files
 load mapping.mat             % load file as created with InputMapping.m
-% H =[0.0206 , -0.0206;
-%     0.1808,   0.1808];
-% H = flip(H);
+H =[0.0206 , -0.0206;
+    0.1808,   0.1808];
+H = flip(H);
 
 p1 = datap(1,:);             % first row is sorted pressure
 p2 = p1;                     % elongation, p2 = p1
