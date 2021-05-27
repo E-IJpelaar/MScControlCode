@@ -2,6 +2,10 @@ clear;close all;clc;tic
 
 H = [0.0018 , -0.0018;
      0.1453 ,  0.1453];
+%  
+ 
+% H = [0.0206 , -0.0206;
+%      0.1808 ,  0.1808];
  
 dt = 1e-3;
 t_end = 20;
@@ -25,7 +29,7 @@ space_step = 15;
 shape = 'cheby';
 %% Parameters
 % geometric properties
-L0 = 0.0645;            % [m] initial length
+L0 = 0.070;            % [m] initial length
 m  = 0.0332;            % [kg] actuator weight
 w  = 0.054;             % [m] width of actuator
 d  = 0.025;             % [m] depth of the actuator
@@ -37,17 +41,24 @@ D   = diag([D_k,D_e]);    % Damping matrix
 
 %% Reference
 % set refernce
-r_ref3 = ts2cs3(8,0.3,L0);
+r_ref3 = ts2cs3(4,0.2,L0);
 r_ref = [r_ref3(2);r_ref3(3)];
 
-Kp = diag([5000,5000]); % current best tuning
-Ki = diag([1500,3500]);
+% Kp = diag([5000,5000]); % current best tuning
+% Ki = diag([1500,3500]);
+
+Kp = diag([1500,1500]); % current best tuning
+Ki = diag([1500,1500]);
 
 % effects lower I, higher I, Kp write down for report.
 
 
+% Kpp = diag([1,1]);
+% Kip = diag([0,0]);
+
 Kpp = diag([1,1]);
-Kip = diag([0,0]);
+Kip = diag([0.15,0.15]);
+
 
 
 %% Initial conditions 

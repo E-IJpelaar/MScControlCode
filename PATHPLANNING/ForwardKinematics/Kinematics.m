@@ -5,7 +5,7 @@ Nmode = 1;            % # shape functions to approximate strain/curvature
 
 L0 = 70e-3;         % undeformed length of actuator
 
-q = [4,0.19];         % q(t) = q(0) kappa;epsilon
+q = [6,0.2];         % q(t) = q(0) kappa;epsilon
 
 %% Contrained strain/curvature, 0 = contrained 1 = free
 K1 = 0;  % curvatures
