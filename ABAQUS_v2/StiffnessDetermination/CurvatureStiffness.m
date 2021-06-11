@@ -1,11 +1,16 @@
 clear all;close all;clc;
 %% load files
-% load mapping.mat             % load file as created with InputMapping.m
+load mapping.mat             % load file as created with InputMapping.m
 
-H =[0.0206 , -0.0206;
-    0.1808,   0.1808];  % order is reversed here
-H = flip(H);
-% clear datap                  % elongation data is not needed
+% H = [0.0206 , -0.0206;
+%     0.1605 ,  0.1606]; % experimenally obtained mapping
+
+% H = [0.0824 , -0.0824;
+%     0.1605 ,  0.1606]; % tuned mapping based on experiments
+
+% H = flip(H);
+
+clear datap                  % elongation data is not needed
 load PressureRot_20201208T151436.mat     % rotation data
 rot_data = sortrows(data.',1).';         % sort data by increasing pressure
 rot_data = [zeros(4,1),rot_data];        % add an additional point 0 N = 0 elongation
