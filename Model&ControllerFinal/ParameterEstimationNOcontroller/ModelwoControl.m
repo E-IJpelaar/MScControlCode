@@ -7,8 +7,9 @@ clear;close all;clc;tic
 H = [0.0018 , -0.0018;
     0.1453  ,  0.1453]; % old mapping
 
-dt = 10e-3;
-t_end = 20;
+dt = 25e-3;
+t_begin = 0;
+t_end = 182;
  
 
 %% Parameters
@@ -23,15 +24,17 @@ w  = 0.064;             % [m] width of actuator
 d  = 0.025;             % [m] depth of the actuator
 
 % Damping matrix             
-% D_k = 4e-5;               % [Nsm]Linear damping on bending (order E-5)
-D_k = 6.75e-6;          % [Nsm]Linear damping on bending (order E-5)
+D_k = 4e-5;               % [Nsm]Linear damping on bending (order E-5)
+% D_k = 6.75e-6;          % [Nsm]Linear damping on bending (order E-5)
 % D_e = 0.3;                % [Ns/m]Linear damping on elongation (order E-3)
+% D_e = 3;
 D_e = 2.5e-2;
 D   = diag([D_k,D_e]);    % Damping matrix
 
 %% Load input signal, pressure signal
 
-data = load('parameterfitdata.txt');
+data = load('16069V.txt');
+Voltstep = 9;
 
 m2mm = 1e3;
 
@@ -48,11 +51,22 @@ kappa = data(:,10);
 epsilon = data(:,11);
 angle = data(:,12);
 
+% figure(11)
+% plot(texp,epsilon)
+% hold on;grid on;
+% 
+% figure(12)
+% plot(texp,angle)
+% hold on;grid on;
+% 
+% figure(13)
+% plot(texp,kappa)
+% hold on;grid on;
 
 
 %% Initial conditions 
 % initial conditions 
-rot0 = 0;                          % [deg]  initial rotation
+rot0 = 0;                   % [deg]  initial rotation
 e0   = 0;                          % [-]    initial elongation
 k0   = deg2rad(rot0)/(L0*(1+e0));  % [1/m] initial curvature
 q0   = [k0 e0];
@@ -69,9 +83,9 @@ p0 = [p10 p20];
 
 
 % solve SS-model
-T = 0:dt:t_end;
+T = t_begin:dt:t_end;
 x0 = [q0 dq0 p0];                       % initial condition vector
-[t,x] = ode23(@(t,x) nonLinearDynamicModelPressureModelParameterEstimation(t,x,D,H,L0,m,w,d,Nmode,shape,space_step,dt),T,x0);
+[t,x] = ode23(@(t,x) nonLinearDynamicModelPressureModelParameterEstimation(t,x,D,H,L0,m,w,d,Nmode,shape,space_step,dt,Voltstep),T,x0);
 
 %% Data extraction
 
@@ -104,6 +118,7 @@ figure(3)
 plot(t,rot)
 hold on;grid on;
 plot(texp,angle-angle(1))
+% plot(texp,angle)
 legend('Simulation','Experiment')
 xlabel('Time [s]');ylabel('Rotation [deg]')
 
@@ -112,9 +127,20 @@ figure(4)
 plot(t,p1sim)
 hold on;grid on;
 plot(texp,(p1-p01)/10)
+plot(t,p2sim)
+plot(texp,(p2-p02)/10)
 xlabel('Time [s]');ylabel('Pressure  [kPa]')
-legend('Simulation','Experiment')
+legend('Simulation p1','Experiment p1','Simulation p2','Experiment p2')
+
+
+% figure(5)
+% plot(t(4002:end),rot(4002:end))
+% hold on;grid on;
+% plot(texp(1001:end),angle( 1001:end))
+
+
 toc
+
 
 
 

@@ -1,13 +1,13 @@
 clear;close all;clc;tic
 
 
- H = [0.0206 , -0.0206;
-     0.1605 ,  0.1606]; % changed mapping
+%  H = [0.0206 , -0.0206;
+%      0.1605 ,  0.1606]; % changed mapping
  
-%H = [0.0018 , -0.0018;
-%     0.1453 ,  0.1453]; % old mapping
+H = [0.0018 , -0.0018;
+    0.1453 ,  0.1453]; % old mapping
  
-dt = 1e-3;
+dt = 5e-3;
 t_end = 20;
  
 global tau_error_sum  p_error_sum U1 U2 time pset1 pset2 tau1 tau2 TAU1 TAU2 prev_TAU filJ;
@@ -55,17 +55,13 @@ r_ref = [-0.014;0.082];
 % r_ref3 = ts2cs3(12,0.3,L0);
 % r_ref = [r_ref3(2);r_ref3(3)]
 
-% Kp = diag([850,850]); % current best tuning with old mapping
-% Ki = diag([1500,1500]);
-% filJ = 1;
 
-
-Kp = diag([3000,3000]); % with new mapping
-Ki = diag([2000,2000]);
+Kp = diag([150,2150]); % with new mapping
+Ki = diag([350,500]);
 filJ = 1;
 
 Kpp = diag([1,1]);
-Kip = diag([0.75,0.75]);
+Kip = diag([0.25,0.25]);
 
 
 %% Initial conditions 
@@ -106,21 +102,21 @@ end
 
 
 
-figure(100)
-plot(t,x_pos,'LineWidth',1.5)
-hold on;grid on;
-plot(t,r_ref(1)*ones(1,length(x_pos)),'r-','LineWidth', 1.5)
-xlabel('Time [s]');ylabel('Position [m]')
-legend('x - position','Reference','FontSize',12)
+% figure(100)
+% plot(t,x_pos,'LineWidth',1.5)
+% hold on;grid on;
+% plot(t,r_ref(1)*ones(1,length(x_pos)),'r-','LineWidth', 1.5)
+% xlabel('Time [s]');ylabel('Position [m]')
+% legend('x - position','Reference','FontSize',12)
 
 
 % figure(11)
-plot(t,y_pos,'LineWidth',1.5)
-hold on;grid on;
-plot(t,r_ref(2)*ones(1,length(y_pos)),'r-','LineWidth', 1.5)
-xlabel('Time [s]');ylabel('Position [m]')
-legend('y - position','Reference','FontSize',12)
-
+% plot(t,y_pos,'LineWidth',1.5)
+% hold on;grid on;
+% plot(t,r_ref(2)*ones(1,length(y_pos)),'r-','LineWidth', 1.5)
+% xlabel('Time [s]');ylabel('Position [m]')
+% legend('y - position','Reference','FontSize',12)
+% 
 
 
 L = L0*(1+e);    % actuator length
@@ -131,7 +127,7 @@ de = x(:,4); % elongation rate
 
 
 %% Modal coordinates
-figure(10)
+% figure(10)
 % yyaxis left
 % plot(t,e,'LineWidth',2)
 % ylabel('Elongation [-]')
@@ -140,28 +136,28 @@ figure(10)
 % xlim([0 0.1])
 
 % yyaxis right
-plot(t,rot,'LineWidth',2)
-hold on;grid on
-xlabel('Time [s]')
-ylabel('Angle [deg]')
-ylim([-50 50])
-xlim([0 0.1])
+% plot(t,rot,'LineWidth',2)
+% hold on;grid on
+% xlabel('Time [s]')
+% ylabel('Angle [deg]')
+% ylim([-50 50])
+% xlim([0 0.1])
 
 % legend('\Elongation [-]','Rotation [1/m]')
 
 %% Modal coordinate velocity
 
-figure(12)
-yyaxis left
-plot(t,de,'LineWidth',1.5)
-ylabel('$\dot{\epsilon}$ [1/s]','Interpreter','Latex')
-hold on;grid on;
-
-yyaxis right
-plot(t,dk,'LineWidth',1.5)
-xlabel('Time [s]');ylabel('$\dot{\kappa}$ [1/ms]','Interpreter','Latex')
-legend('$\dot{\epsilon}$ [1/s]','$\dot{\kappa}$ [1/ms]','Interpreter','Latex')
+% figure(12)
+% yyaxis left
+% plot(t,de,'LineWidth',1.5)
+% ylabel('$\dot{\epsilon}$ [1/s]','Interpreter','Latex')
+% hold on;grid on;
 % 
+% yyaxis right
+% plot(t,dk,'LineWidth',1.5)
+% xlabel('Time [s]');ylabel('$\dot{\kappa}$ [1/ms]','Interpreter','Latex')
+% legend('$\dot{\epsilon}$ [1/s]','$\dot{\kappa}$ [1/ms]','Interpreter','Latex')
+
 
 %% Actuator length and rotation
 % figure(3)

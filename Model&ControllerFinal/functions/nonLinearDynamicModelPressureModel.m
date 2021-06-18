@@ -10,8 +10,14 @@ p = [p1;p2];
 q = [k;e];
 
 %% Pressure model dp/dt = -0.28p(t) + 2.68V(t)
-C_p1 = diag([0.285336645573371 , 0.285336645573371]);
-C_p2 = diag([2.687852328855003,2.687852328855003]);
+%  (old one 08-04)
+% C_p1 = diag([0.285336645573371 , 0.285336645573371]);
+% C_p2 = diag([2.687852328855003,2.687852328855003]);
+
+
+% Updated pressure model for sinus input (10-06)
+C_p1 = diag([0.571455683571649 , 0.571455683571649]);
+C_p2 = diag([3.935359161537569 , 3.935359161537569]);
 
 %% Determine Mass and Jacobian
 [M,J]  = massMatrix(k,e,L0,m,w,d,Nmode,shape,space_step);
@@ -23,7 +29,7 @@ invM = inv(M);
 % Calculate stiffness at instant x
 Kk = bendStiffness(k);
 Ke = elongStiffness(e);
-K = diag([100*Kk,4*Ke]);        % Stiffness matrix
+K = diag([2.75*Kk,3.7*Ke]);        % Stiffness matrix
 
 % Non-linear state-space
 O2 = zeros(2,2);
